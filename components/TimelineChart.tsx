@@ -1,14 +1,38 @@
 'use client';
 
+import { useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { TimelinePrediction } from '@/types/financial';
 
 interface TimelineChartProps {
   statusQuoData: TimelinePrediction[];
   whatIfData?: TimelinePrediction[];
+  onTimeRangeChange?: (months: number) => void;
 }
 
-export default function TimelineChart({ statusQuoData, whatIfData }: TimelineChartProps) {
+type TimeRange = {
+  label: string;
+  months: number;
+};
+
+const TIME_RANGES: TimeRange[] = [
+  { label: '1M', months: 1 },
+  { label: '6M', months: 6 },
+  { label: '1Y', months: 12 },
+  { label: '5Y', months: 60 },
+  { label: '10Y', months: 120 },
+];
+
+export default function TimelineChart({ statusQuoData, whatIfData, onTimeRangeChange }: TimelineChartProps) {
+  const [selectedRange, setSelectedRange] = useState<number>(12);
+
+  const handleRangeChange = (months: number) => {
+    setSelectedRange(months);
+    if (onTimeRangeChange) {
+      onTimeRangeChange(months);
+    }
+  };
+
   const chartData = statusQuoData.map((sq, index) => ({
     month: sq.month,
     statusQuoNetWorth: sq.netWorth,
@@ -19,9 +43,28 @@ export default function TimelineChart({ statusQuoData, whatIfData }: TimelineCha
 
   return (
     <div className="bg-retro-gray p-6 rounded-lg border-2 border-neon-blue/30">
-      <h2 className="text-2xl font-bold text-neon-blue uppercase tracking-wider mb-6 flex items-center gap-2">
-        <span>📊</span> Timeline Projection
-      </h2>
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl font-bold text-neon-blue uppercase tracking-wider flex items-center gap-2">
+          <span>📊</span> Timeline Projection
+        </h2>
+
+        {/* Time Range Selector */}
+        <div className="flex items-center gap-2 bg-retro-darker rounded-lg p-1">
+          {TIME_RANGES.map((range) => (
+            <button
+              key={range.months}
+              onClick={() => handleRangeChange(range.months)}
+              className={`px-4 py-2 rounded font-bold text-sm uppercase transition-all ${
+                selectedRange === range.months
+                  ? 'bg-neon-blue text-retro-dark shadow-[0_0_10px_rgba(0,240,255,0.5)]'
+                  : 'text-gray-400 hover:text-neon-blue'
+              }`}
+            >
+              {range.label}
+            </button>
+          ))}
+        </div>
+      </div>
 
       <ResponsiveContainer width="100%" height={300}>
         <LineChart data={chartData}>

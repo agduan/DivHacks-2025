@@ -114,7 +114,7 @@ export default function Home() {
   return (
     <main className="min-h-screen retro-grid">
       {/* Header */}
-      <header className="border-b-2 border-neon-blue/30 bg-retro-darker/80 backdrop-blur-sm">
+      <header className="sticky top-0 z-50 border-b-2 border-neon-blue/30 bg-retro-darker/95 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -218,6 +218,7 @@ export default function Home() {
         <TimelineChart
           statusQuoData={statusQuoTimeline}
           whatIfData={whatIfTimeline || undefined}
+          onTimeRangeChange={setTimelineMonths}
         />
 
         {/* AI Agent Comparison */}
