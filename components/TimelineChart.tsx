@@ -44,9 +44,9 @@ export default function TimelineChart({ statusQuoData, whatIfData, onTimeRangeCh
   return (
     <div className="bg-retro-gray p-6 rounded-lg border-2 border-neon-blue/30">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-neon-blue uppercase tracking-wider flex items-center gap-2">
-          <span>📊</span> Timeline Projection
-        </h2>
+         <h2 className="text-2xl font-bold text-neon-blue uppercase tracking-wider">
+           Timeline Projection
+         </h2>
 
         {/* Time Range Selector */}
         <div className="flex items-center gap-2 bg-retro-darker rounded-lg p-1">
@@ -71,20 +71,20 @@ export default function TimelineChart({ statusQuoData, whatIfData, onTimeRangeCh
           <CartesianGrid strokeDasharray="3 3" stroke="#1a1f3a" />
           <XAxis
             dataKey="month"
-            stroke="#00f0ff"
-            label={{ value: 'Months', position: 'insideBottom', offset: -5, fill: '#00f0ff' }}
+            stroke="#4a9eff"
+            label={{ value: 'Months', position: 'insideBottom', offset: -5, fill: '#4a9eff' }}
           />
           <YAxis
-            stroke="#00f0ff"
-            label={{ value: 'Amount ($)', angle: -90, position: 'insideLeft', fill: '#00f0ff' }}
+            stroke="#4a9eff"
+            label={{ value: 'Amount ($)', angle: -90, position: 'insideLeft', fill: '#4a9eff' }}
           />
           <Tooltip
             contentStyle={{
               backgroundColor: '#0a0e27',
-              border: '2px solid #00f0ff',
+              border: '2px solid #4a9eff',
               borderRadius: '8px',
             }}
-            labelStyle={{ color: '#00f0ff' }}
+            labelStyle={{ color: '#4a9eff' }}
           />
           <Legend />
           <Line

@@ -6,7 +6,6 @@ export default function IntegrationPlaceholders() {
       {/* XRPL Integration */}
       <div className="bg-retro-gray p-6 rounded-lg border-2 border-neon-blue/30 space-y-4">
         <div className="flex items-center gap-3">
-          <span className="text-3xl">💎</span>
           <div>
             <h3 className="text-xl font-bold text-neon-blue uppercase">XRPL Integration</h3>
             <p className="text-xs text-gray-400">Coming Soon</p>
@@ -35,7 +34,6 @@ export default function IntegrationPlaceholders() {
       {/* Echo Monetization */}
       <div className="bg-retro-gray p-6 rounded-lg border-2 border-neon-pink/30 space-y-4">
         <div className="flex items-center gap-3">
-          <span className="text-3xl">⚡</span>
           <div>
             <h3 className="text-xl font-bold text-neon-pink uppercase">Echo Premium</h3>
             <p className="text-xs text-gray-400">Unlock Advanced Features</p>

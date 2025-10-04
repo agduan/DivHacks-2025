@@ -10,10 +10,10 @@ const config: Config = {
     extend: {
       colors: {
         neon: {
-          blue: '#00f0ff',
-          pink: '#ff00ff',
-          green: '#00ff41',
-          purple: '#9d00ff',
+          blue: '#4a9eff',
+          pink: '#cc66cc',
+          green: '#66cc88',
+          purple: '#9966cc',
         },
         retro: {
           dark: '#0a0e27',

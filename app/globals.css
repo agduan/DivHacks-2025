@@ -23,17 +23,17 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #00f0ff;
+  background: #4a9eff;
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #00d4dd;
+  background: #3a8eef;
 }
 
 /* Neon glow effect */
 .neon-glow {
-  text-shadow: 0 0 10px currentColor, 0 0 20px currentColor, 0 0 30px currentColor;
+  text-shadow: 0 0 5px currentColor, 0 0 10px currentColor, 0 0 15px currentColor;
 }
 
 /* Button hover effects */

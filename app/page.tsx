@@ -118,7 +118,6 @@ export default function Home() {
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <span className="text-4xl">⏰</span>
               <div>
                 <h1 className="text-3xl font-bold text-neon-blue uppercase tracking-wider neon-glow">
                   Financial Time Machine
@@ -154,16 +153,9 @@ export default function Home() {
             className="bg-gradient-to-r from-neon-blue to-neon-purple text-white px-12 py-4 rounded-lg font-bold text-xl uppercase tracking-wider shadow-[0_0_30px_rgba(0,240,255,0.5)] hover:shadow-[0_0_50px_rgba(0,240,255,0.8)] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3"
           >
             {loading ? (
-              <>
-                <span className="animate-spin">⏳</span>
-                Traveling...
-              </>
+              <>Traveling...</>
             ) : (
-              <>
-                <span>🚀</span>
-                Travel to Next Year!
-                <span>🚀</span>
-              </>
+              <>Travel to Next Year!</>
             )}
           </button>
         </div>
@@ -200,8 +192,8 @@ export default function Home() {
         {/* Insights */}
         {insights.length > 0 && (
           <div className="bg-retro-gray p-6 rounded-lg border-2 border-neon-green/30">
-            <h2 className="text-2xl font-bold text-neon-green uppercase tracking-wider mb-4 flex items-center gap-2">
-              <span>💡</span> Key Insights
+            <h2 className="text-2xl font-bold text-neon-green uppercase tracking-wider mb-4">
+              Key Insights
             </h2>
             <ul className="space-y-2">
               {insights.map((insight, index) => (
@@ -231,7 +223,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="border-t-2 border-neon-blue/30 bg-retro-darker/80 backdrop-blur-sm mt-12">
         <div className="container mx-auto px-4 py-6 text-center text-gray-400 text-sm">
-          <p>Built with ❤️ for DivHacks 2025</p>
+          <p>Built with love for DivHacks 2025</p>
           <p className="mt-2">
             Powered by Next.js • TypeScript • Tailwind CSS • Recharts • Capital One Nessie API
           </p>

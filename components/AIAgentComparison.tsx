@@ -10,8 +10,8 @@ interface AIAgentComparisonProps {
 export default function AIAgentComparison({ agents, evaluations }: AIAgentComparisonProps) {
   return (
     <div className="bg-retro-gray p-6 rounded-lg border-2 border-neon-purple/30">
-      <h2 className="text-2xl font-bold text-neon-purple uppercase tracking-wider mb-6 flex items-center gap-2">
-        <span>🤖</span> AI Agent Comparison
+      <h2 className="text-2xl font-bold text-neon-purple uppercase tracking-wider mb-6">
+        AI Agent Comparison
       </h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -107,7 +107,7 @@ export default function AIAgentComparison({ agents, evaluations }: AIAgentCompar
       {evaluations.length > 0 && (
         <div className="mt-6 p-4 bg-neon-green/10 border-2 border-neon-green rounded-lg">
           <p className="text-neon-green font-bold text-center">
-            🏆 Most Reliable Agent:{' '}
+            Most Reliable Agent:{' '}
             {evaluations.reduce((best, current) =>
               current.reliability > best.reliability ? current : best
             ).agentName}

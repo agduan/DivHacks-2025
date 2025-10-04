@@ -35,8 +35,8 @@ export default function ScenarioAdjuster({ onChangesUpdate }: ScenarioAdjusterPr
   return (
     <div className="bg-retro-gray p-6 rounded-lg border-2 border-neon-green/30 space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-neon-green uppercase tracking-wider flex items-center gap-2">
-          <span>🔮</span> What-If Scenarios
+        <h2 className="text-2xl font-bold text-neon-green uppercase tracking-wider">
+          What-If Scenarios
         </h2>
         <button
           onClick={addChange}

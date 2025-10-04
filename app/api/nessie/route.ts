@@ -9,11 +9,16 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const accountId = searchParams.get('accountId');
     
-    // In production, you would call the actual Nessie API:
-    // const response = await fetch(`http://api.nessieisreal.com/accounts/${accountId}/purchases?key=${API_KEY}`);
+    const apiKey = process.env.NESSIE_API_KEY;
+    if (!apiKey) {
+      return NextResponse.json(
+        { error: 'API key not configured' },
+        { status: 500 }
+      );
+    }
     
-    // For now, return mock data
-    const transactions = MOCK_NESSIE_TRANSACTIONS;
+    const response = await fetch(`http://api.nessieisreal.com/accounts/${accountId}/purchases?key=${apiKey}`);
+    const transactions = await response.json();
     const parsedData = parseNessieData(transactions);
 
     return NextResponse.json({
@@ -36,7 +41,8 @@ export async function POST(request: NextRequest) {
     const { customerId } = body;
 
     // Placeholder for fetching customer accounts
-    // const response = await fetch(`http://api.nessieisreal.com/customers/${customerId}/accounts?key=${API_KEY}`);
+    // const apiKey = process.env.NESSIE_API_KEY;
+    // const response = await fetch(`http://api.nessieisreal.com/customers/${customerId}/accounts?key=${apiKey}`);
 
     return NextResponse.json({
       message: 'Nessie API integration placeholder',

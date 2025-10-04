@@ -10,24 +10,24 @@ interface AvatarProps {
 
 const avatarStyles = {
   struggling: {
-    color: '#ff4444',
+    color: '#cc6666',
     emoji: '😰',
-    glow: 'shadow-[0_0_20px_rgba(255,68,68,0.5)]',
+    glow: 'shadow-[0_0_15px_rgba(204,102,102,0.3)]',
   },
   stable: {
-    color: '#ffaa00',
+    color: '#ccaa66',
     emoji: '😊',
-    glow: 'shadow-[0_0_20px_rgba(255,170,0,0.5)]',
+    glow: 'shadow-[0_0_15px_rgba(204,170,102,0.3)]',
   },
   thriving: {
-    color: '#00ff41',
+    color: '#66cc88',
     emoji: '😎',
-    glow: 'shadow-[0_0_20px_rgba(0,255,65,0.5)]',
+    glow: 'shadow-[0_0_15px_rgba(102,204,136,0.3)]',
   },
   wealthy: {
-    color: '#00f0ff',
+    color: '#4a9eff',
     emoji: '🤑',
-    glow: 'shadow-[0_0_20px_rgba(0,240,255,0.5)]',
+    glow: 'shadow-[0_0_15px_rgba(74,158,255,0.3)]',
   },
 };
 
@@ -66,7 +66,7 @@ export default function Avatar({ state, label, netWorth, savings, debt }: Avatar
           <span className="text-gray-400">Net Worth:</span>
           <span
             className="font-bold"
-            style={{ color: netWorth >= 0 ? '#00ff41' : '#ff4444' }}
+            style={{ color: netWorth >= 0 ? '#66cc88' : '#cc6666' }}
           >
             ${netWorth.toLocaleString()}
           </span>

@@ -28,8 +28,8 @@ export default function FinancialInputForm({ initialData, onDataChange }: Financ
 
   return (
     <div className="bg-retro-gray p-6 rounded-lg border-2 border-neon-purple/30 space-y-6">
-      <h2 className="text-2xl font-bold text-neon-purple uppercase tracking-wider flex items-center gap-2">
-        <span>⚙️</span> Financial Input
+      <h2 className="text-2xl font-bold text-neon-purple uppercase tracking-wider">
+        Financial Input
       </h2>
 
       {/* Income */}
