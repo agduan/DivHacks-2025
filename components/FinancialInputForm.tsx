@@ -27,14 +27,14 @@ export default function FinancialInputForm({ initialData, onDataChange }: Financ
   };
 
   return (
-    <div className="bg-retro-gray p-6 rounded-lg border-2 border-neon-purple/30 space-y-6">
+    <div className="bg-retro-gray p-6 rounded-lg border-2 border-neon-purple/50 space-y-6">
       <h2 className="text-2xl font-bold text-neon-purple uppercase tracking-wider">
         Financial Input
       </h2>
 
       {/* Income */}
       <div className="space-y-2">
-        <label className="block text-sm text-gray-300 uppercase tracking-wide">
+        <label className="block text-sm text-neon-blue uppercase tracking-wide">
           Monthly Income
         </label>
         <input
@@ -53,7 +53,7 @@ export default function FinancialInputForm({ initialData, onDataChange }: Financ
         
         {Object.entries(data.monthlyExpenses).map(([category, amount]) => (
           <div key={category} className="flex items-center gap-3">
-            <label className="w-32 text-sm text-gray-300 capitalize">
+            <label className="w-32 text-sm text-neon-purple capitalize">
               {category}:
             </label>
             <input
@@ -74,7 +74,7 @@ export default function FinancialInputForm({ initialData, onDataChange }: Financ
       {/* Current Status */}
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <label className="block text-sm text-gray-300 uppercase tracking-wide">
+          <label className="block text-sm text-neon-green uppercase tracking-wide">
             Current Savings
           </label>
           <input
@@ -86,7 +86,7 @@ export default function FinancialInputForm({ initialData, onDataChange }: Financ
         </div>
 
         <div className="space-y-2">
-          <label className="block text-sm text-gray-300 uppercase tracking-wide">
+          <label className="block text-sm text-neon-pink uppercase tracking-wide">
             Current Debt
           </label>
           <input
@@ -100,7 +100,7 @@ export default function FinancialInputForm({ initialData, onDataChange }: Financ
 
       {/* Savings Goal */}
       <div className="space-y-2">
-        <label className="block text-sm text-gray-300 uppercase tracking-wide">
+        <label className="block text-sm text-neon-blue uppercase tracking-wide">
           Savings Goal (Optional)
         </label>
         <input

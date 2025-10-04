@@ -33,7 +33,7 @@ export default function ScenarioAdjuster({ onChangesUpdate }: ScenarioAdjusterPr
   };
 
   return (
-    <div className="bg-retro-gray p-6 rounded-lg border-2 border-neon-green/30 space-y-4">
+    <div className="bg-retro-gray p-6 rounded-lg border-2 border-neon-green/50 space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-neon-green uppercase tracking-wider">
           What-If Scenarios

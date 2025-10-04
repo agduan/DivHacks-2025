@@ -9,7 +9,7 @@ interface AIAgentComparisonProps {
 
 export default function AIAgentComparison({ agents, evaluations }: AIAgentComparisonProps) {
   return (
-    <div className="bg-retro-gray p-6 rounded-lg border-2 border-neon-purple/30">
+    <div className="bg-retro-gray p-6 rounded-lg border-2 border-neon-purple/50">
       <h2 className="text-2xl font-bold text-neon-purple uppercase tracking-wider mb-6">
         AI Agent Comparison
       </h2>
@@ -22,13 +22,13 @@ export default function AIAgentComparison({ agents, evaluations }: AIAgentCompar
           return (
             <div
               key={agent.agentName}
-              className="bg-retro-darker p-4 rounded-lg border border-neon-blue/30 space-y-3"
+              className="bg-retro-darker p-4 rounded-lg border border-neon-green/50 space-y-3"
             >
               {/* Agent Header */}
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-bold text-neon-blue">{agent.agentName}</h3>
                 <div className="flex items-center gap-1">
-                  <span className="text-xs text-gray-400">Confidence:</span>
+                  <span className="text-xs text-neon-blue">Confidence:</span>
                   <span className="text-sm font-bold text-neon-green">
                     {(agent.confidence * 100).toFixed(0)}%
                   </span>
@@ -38,19 +38,19 @@ export default function AIAgentComparison({ agents, evaluations }: AIAgentCompar
               {/* Predictions */}
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Net Worth:</span>
+                  <span className="text-neon-blue">Net Worth:</span>
                   <span className="text-neon-green font-bold">
                     ${finalPrediction.netWorth.toLocaleString()}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Savings:</span>
+                  <span className="text-neon-purple">Savings:</span>
                   <span className="text-neon-blue font-bold">
                     ${finalPrediction.savings.toLocaleString()}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Debt:</span>
+                  <span className="text-neon-pink">Debt:</span>
                   <span className="text-neon-pink font-bold">
                     ${finalPrediction.debt.toLocaleString()}
                   </span>
@@ -59,8 +59,8 @@ export default function AIAgentComparison({ agents, evaluations }: AIAgentCompar
 
               {/* Insights */}
               <div className="space-y-1">
-                <p className="text-xs text-gray-400 uppercase tracking-wide">Key Insights:</p>
-                <ul className="text-xs text-gray-300 space-y-1">
+                <p className="text-xs text-neon-purple uppercase tracking-wide font-bold">Key Insights:</p>
+                <ul className="text-xs text-neon-green space-y-1">
                   {agent.insights.slice(0, 2).map((insight, i) => (
                     <li key={i} className="flex items-start gap-1">
                       <span className="text-neon-green">▸</span>
@@ -78,19 +78,19 @@ export default function AIAgentComparison({ agents, evaluations }: AIAgentCompar
                   </p>
                   <div className="grid grid-cols-3 gap-2 text-xs">
                     <div className="text-center">
-                      <div className="text-gray-400">Consistency</div>
+                      <div className="text-neon-blue">Consistency</div>
                       <div className="text-neon-green font-bold">
                         {(evaluation.consistency * 100).toFixed(0)}%
                       </div>
                     </div>
                     <div className="text-center">
-                      <div className="text-gray-400">Accuracy</div>
+                      <div className="text-neon-purple">Accuracy</div>
                       <div className="text-neon-blue font-bold">
                         {(evaluation.accuracy * 100).toFixed(0)}%
                       </div>
                     </div>
                     <div className="text-center">
-                      <div className="text-gray-400">Reliability</div>
+                      <div className="text-neon-pink">Reliability</div>
                       <div className="text-neon-purple font-bold">
                         {(evaluation.reliability * 100).toFixed(0)}%
                       </div>

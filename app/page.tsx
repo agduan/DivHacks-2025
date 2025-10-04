@@ -114,7 +114,7 @@ export default function Home() {
   return (
     <main className="min-h-screen retro-grid">
       {/* Header */}
-      <header className="sticky top-0 z-50 border-b-2 border-neon-blue/30 bg-retro-darker/95 backdrop-blur-sm">
+      <header className="sticky top-0 z-50 border-b-2 border-neon-green/50 bg-retro-darker/95 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -122,13 +122,13 @@ export default function Home() {
                 <h1 className="text-3xl font-bold text-neon-blue uppercase tracking-wider neon-glow">
                   Financial Time Machine
                 </h1>
-                <p className="text-sm text-gray-400 mt-1">
+                <p className="text-sm text-neon-blue mt-1">
                   See your financial future before it happens
                 </p>
               </div>
             </div>
             <div className="text-right">
-              <p className="text-sm text-gray-400">Viewing</p>
+              <p className="text-sm text-neon-blue">Viewing</p>
               <p className="text-xl font-bold text-neon-green">{timelineMonths} Months</p>
             </div>
           </div>
@@ -150,12 +150,19 @@ export default function Home() {
           <button
             onClick={handleTimeTravel}
             disabled={loading}
-            className="bg-gradient-to-r from-neon-blue to-neon-purple text-white px-12 py-4 rounded-lg font-bold text-xl uppercase tracking-wider shadow-[0_0_30px_rgba(0,240,255,0.5)] hover:shadow-[0_0_50px_rgba(0,240,255,0.8)] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3"
+            className="bg-neon-blue text-white px-12 py-4 rounded-lg font-bold text-xl uppercase tracking-wider transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3"
           >
             {loading ? (
-              <>Traveling...</>
+              <>
+                <span className="animate-spin">⏳</span>
+                Traveling...
+              </>
             ) : (
-              <>Travel to Next Year!</>
+              <>
+                <span>🚀</span>
+                Travel to Next Year!
+                <span>🚀</span>
+              </>
             )}
           </button>
         </div>
@@ -191,7 +198,7 @@ export default function Home() {
 
         {/* Insights */}
         {insights.length > 0 && (
-          <div className="bg-retro-gray p-6 rounded-lg border-2 border-neon-green/30">
+          <div className="bg-retro-gray p-6 rounded-lg border-2 border-neon-green/50">
             <h2 className="text-2xl font-bold text-neon-green uppercase tracking-wider mb-4">
               Key Insights
             </h2>
@@ -221,7 +228,7 @@ export default function Home() {
       </div>
 
       {/* Footer */}
-      <footer className="border-t-2 border-neon-blue/30 bg-retro-darker/80 backdrop-blur-sm mt-12">
+      <footer className="border-t-2 border-neon-purple/50 bg-retro-darker/80 backdrop-blur-sm mt-12">
         <div className="container mx-auto px-4 py-6 text-center text-gray-400 text-sm">
           <p>Built with love for DivHacks 2025</p>
           <p className="mt-2">

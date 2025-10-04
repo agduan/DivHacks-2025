@@ -42,9 +42,9 @@ export default function TimelineChart({ statusQuoData, whatIfData, onTimeRangeCh
   }));
 
   return (
-    <div className="bg-retro-gray p-6 rounded-lg border-2 border-neon-blue/30">
+    <div className="bg-retro-gray p-6 rounded-lg border-2 border-neon-green/50">
       <div className="flex items-center justify-between mb-6">
-         <h2 className="text-2xl font-bold text-neon-blue uppercase tracking-wider">
+         <h2 className="text-2xl font-bold text-neon-green uppercase tracking-wider">
            Timeline Projection
          </h2>
 
