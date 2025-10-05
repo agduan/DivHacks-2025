@@ -20,6 +20,7 @@ function MainApp() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
   const [isButtonHovered, setIsButtonHovered] = useState(false);
+  const [guestMode, setGuestMode] = useState(false);
 
   // Check URL parameters for auth mode
   useEffect(() => {
@@ -42,7 +43,7 @@ function MainApp() {
     );
   }
 
-  if (!user) {
+  if (!user && !guestMode) {
     return (
       <div className="min-h-screen bg-retro-darker flex items-center justify-center">
         <div className="text-center max-w-2xl mx-auto px-6">
@@ -96,6 +97,15 @@ function MainApp() {
               <li>📊 Multi-agent AI comparison</li>
               <li>🎯 Personalized financial insights</li>
             </ul>
+          </div>
+
+          <div className="mt-6">
+            <button
+              onClick={() => setGuestMode(true)}
+              className="text-gray-400 hover:text-neon-blue text-sm transition-colors underline"
+            >
+              No thanks, let me test it out
+            </button>
           </div>
         </div>
 
