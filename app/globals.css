@@ -177,3 +177,8 @@ input:focus {
   }
 }
 
+/* Idle animation - just the first frame */
+.dino-anim-idle {
+  background-position: 0 0;
+}
+

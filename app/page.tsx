@@ -65,7 +65,7 @@ function MainApp() {
                 setAuthMode('signin');
                 setShowAuthModal(true);
               }}
-              className="w-full bg-neon-green text-black px-8 py-4 rounded font-bold text-lg uppercase tracking-wide transition-all hover:bg-neon-green/80"
+              className="w-full bg-neon-green text-black px-8 py-4 rounded font-bold text-lg uppercase tracking-wide transition-all"
             >
               Sign In
             </button>
@@ -75,7 +75,7 @@ function MainApp() {
                 setAuthMode('signup');
                 setShowAuthModal(true);
               }}
-              className="w-full bg-neon-blue text-white px-8 py-4 rounded font-bold text-lg uppercase tracking-wide transition-all hover:bg-neon-blue/80"
+              className="w-full bg-neon-blue text-white px-8 py-4 rounded font-bold text-lg uppercase tracking-wide transition-all"
             >
               Create Account
             </button>
@@ -279,16 +279,10 @@ function FinancialTimeMachineApp() {
     }, 600); // Match the hurt animation duration
   };
 
-  // Handle scenario changes - start running when changes are added
+  // Handle scenario changes - keep dino walking
   const handleScenarioChanges = (changes: ScenarioChange[]) => {
     setScenarioChanges(changes);
-    if (changes.length > 0) {
-      console.log('🏃 Dino running - changes added:', changes.length);
-      setDinoAnimation('run');
-    } else {
-      console.log('🚶 Dino walking - no changes');
-      setDinoAnimation('walk');
-    }
+    // Dino stays walking - only runs when "Travel to Next Year" is pressed
   };
 
   // Determine which dino to show based on what-if scenario
@@ -358,7 +352,6 @@ function FinancialTimeMachineApp() {
           >
             {loading ? (
               <>
-                <span className="animate-spin">⏳</span>
                 Traveling...
               </>
             ) : (
@@ -422,28 +415,13 @@ function FinancialTimeMachineApp() {
           onTimeRangeChange={setTimelineMonths}
         />
 
-        {/* AI Agent Comparison - Only show after user clicks "Travel to Next Year" */}
-        {aiAgents.length > 0 && (
-          <AIAgentComparison 
-            agents={aiAgents} 
-            evaluations={evaluations}
-            comparison={opikComparison}
-            loading={aiLoading}
-          />
-        )}
-        
-        {/* Prompt to run analysis */}
-        {aiAgents.length === 0 && !aiLoading && (
-          <div className="bg-retro-gray p-8 rounded-lg border-2 border-neon-purple/50 text-center">
-            <h3 className="text-2xl font-bold text-neon-purple mb-4 font-vcr">
-              AI Financial Advisors
-            </h3>
-            <p className="text-gray-300 mb-6">
-              Click "Travel to Next Year" to get personalized insights from three AI personalities!
-            </p>
-            
-          </div>
-        )}
+        {/* AI Agent Comparison - Always show, with placeholder before analysis */}
+        <AIAgentComparison 
+          agents={aiAgents} 
+          evaluations={evaluations}
+          comparison={opikComparison}
+          loading={aiLoading}
+        />
 
   {/* Integration Placeholders removed as requested */}
       </div>

@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 
 interface DinoSpriteProps {
   variant: 'doux' | 'mort' | 'vita' | 'tard';
-  animation: 'walk' | 'run' | 'hurt';
+  animation: 'walk' | 'run' | 'hurt' | 'idle';
   className?: string;
 }
 
