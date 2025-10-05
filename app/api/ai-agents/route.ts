@@ -100,9 +100,9 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       personalities: [
-        '💼 Casey the Calculator',
-        '🚀 Sunny Saver',
-        '🔥 Grump Gains',
+        'Casey the Calculator',
+        'Sunny Saver',
+        'Grump Gains',
       ],
       totalPersonalities: 3,
       geminiConfigured,

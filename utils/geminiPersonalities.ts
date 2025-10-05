@@ -106,7 +106,7 @@ Projected Timeline (${timeline.length} months):
 - Total Change: $${netWorthChange.toLocaleString()}
 
 Provide your analysis with:
-1. Two key insights about their financial situation (stay in character!)
+1. Two key insights about their financial situation (stay in character!). Feel free to be more expressive and specific.
 2. A confidence score (0-1) for your prediction
 3. Brief reasoning for your assessment
 
@@ -119,8 +119,8 @@ Format your response as JSON:
 
 IMPORTANT: 
 - Stay in character for your personality
-- Keep insights concise (under 20 words each)
-- Make reasoning brief (under 40 words)
+- Keep insights concise but expressive (under 35 words each)
+- Make reasoning brief (under 80 words)
 - Return ONLY valid JSON, no other text`;
 }
 
@@ -299,7 +299,7 @@ export async function getThreePersonalityAnalyses(
     
     if (analysis) {
       return {
-        agentName: `${PERSONALITIES[personality].emoji} ${PERSONALITIES[personality].name}`,
+        agentName: `${PERSONALITIES[personality].name}`,
         predictions: timeline,
         confidence: analysis.confidence,
         insights: analysis.insights,
@@ -309,7 +309,7 @@ export async function getThreePersonalityAnalyses(
       // Use fallback
       const fallback = createFallbackResponse(personality, data, timeline);
       return {
-        agentName: `${PERSONALITIES[personality].emoji} ${PERSONALITIES[personality].name}`,
+        agentName: `${PERSONALITIES[personality].name}`,
         predictions: timeline,
         confidence: fallback.confidence,
         insights: fallback.insights,

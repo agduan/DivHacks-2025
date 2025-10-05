@@ -10,22 +10,46 @@ interface AIAgentComparisonProps {
 }
 
 export default function AIAgentComparison({ agents, evaluations, comparison, loading = false }: AIAgentComparisonProps) {
+  const getAgentColors = (agentName: string) => {
+    if (agentName.includes('Casey the Calculator')) {
+      return {
+        headerText: 'text-neon-blue',
+        border: 'border-neon-blue/50',
+        bullet: 'text-neon-blue',
+        confidenceLabel: 'text-neon-blue',
+      };
+    }
+    if (agentName.includes('Sunny Saver')) {
+      return {
+        headerText: 'text-neon-green',
+        border: 'border-neon-green/50',
+        bullet: 'text-neon-green',
+        confidenceLabel: 'text-neon-green',
+      };
+    }
+    // Grump Gains (default)
+    return {
+      headerText: 'text-neon-pink',
+      border: 'border-neon-pink/50',
+      bullet: 'text-neon-pink',
+      confidenceLabel: 'text-neon-pink',
+    };
+  };
+
   return (
     <div className="bg-retro-gray p-6 rounded-lg border-2 border-neon-purple/50">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-neon-purple uppercase tracking-wider font-vcr">
-          🤖 AI Financial Advisors
+          AI Financial Advisors
         </h2>
         <div className="flex items-center gap-4">
           {comparison && (
             <div className="flex items-center gap-2 text-neon-green text-sm">
-              <span>🔬</span>
               <span>OPIK Analysis Active</span>
             </div>
           )}
           {loading && (
             <div className="flex items-center gap-2 text-neon-blue">
-              <span className="animate-spin">⏳</span>
               <span className="text-sm">Loading AI predictions...</span>
             </div>
           )}
@@ -37,16 +61,17 @@ export default function AIAgentComparison({ agents, evaluations, comparison, loa
           const evaluation = evaluations.find((e) => e.agentName === agent.agentName);
           const finalPrediction = agent.predictions[agent.predictions.length - 1];
 
+          const colors = getAgentColors(agent.agentName);
           return (
             <div
               key={agent.agentName}
-              className="bg-retro-darker p-4 rounded-lg border border-neon-green/50 space-y-3"
+              className={`bg-retro-darker p-4 rounded-lg border ${colors.border} space-y-3`}
             >
               {/* Agent Header */}
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-bold text-neon-blue">{agent.agentName}</h3>
+                <h3 className={`text-lg font-bold ${colors.headerText}`}>{agent.agentName}</h3>
                 <div className="flex items-center gap-1">
-                  <span className="text-xs text-neon-blue">Confidence:</span>
+                  <span className={`text-xs ${colors.confidenceLabel}`}>Confidence:</span>
                   <span className="text-sm font-bold text-neon-green">
                     {(agent.confidence * 100).toFixed(0)}%
                   </span>
@@ -78,10 +103,10 @@ export default function AIAgentComparison({ agents, evaluations, comparison, loa
               {/* Insights */}
               <div className="space-y-1">
                 <p className="text-xs text-neon-purple uppercase tracking-wide font-bold">Key Insights:</p>
-                <ul className="text-xs text-neon-green space-y-1">
+                <ul className="text-xs text-gray-300 space-y-1">
                   {agent.insights.slice(0, 2).map((insight, i) => (
                     <li key={i} className="flex items-start gap-1">
-                      <span className="text-neon-green">▸</span>
+                      <span className={`${colors.bullet}`}>▸</span>
                       <span>{insight}</span>
                     </li>
                   ))}

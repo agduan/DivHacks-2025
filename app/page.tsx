@@ -436,16 +436,12 @@ function FinancialTimeMachineApp() {
         {aiAgents.length === 0 && !aiLoading && (
           <div className="bg-retro-gray p-8 rounded-lg border-2 border-neon-purple/50 text-center">
             <h3 className="text-2xl font-bold text-neon-purple mb-4 font-vcr">
-              🤖 AI Financial Advisors
+              AI Financial Advisors
             </h3>
             <p className="text-gray-300 mb-6">
               Click "Travel to Next Year" to get personalized insights from three AI personalities!
             </p>
-            <div className="flex justify-center gap-6 text-4xl">
-              <span>💼</span>
-              <span>🚀</span>
-              <span>🔥</span>
-            </div>
+            
           </div>
         )}
 
