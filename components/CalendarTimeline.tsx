@@ -224,8 +224,118 @@ export default function CalendarTimeline({
           )}
         </div>
       ) : (
-        <div className="text-center py-8">
-          <p className="text-gray-400">Chart view coming soon...</p>
+        <div className="space-y-6">
+          {/* Chart View */}
+          <div className="bg-retro-darker p-6 rounded-lg border border-neon-blue/30">
+            <h3 className="text-neon-blue font-bold text-lg mb-4">
+              📊 Financial Projection Chart
+            </h3>
+            
+            {/* Simple Chart Implementation */}
+            <div className="space-y-4">
+              {calendarData.map((month, index) => {
+                const netWorth = month.statusQuo.netWorth;
+                const whatIfNetWorth = month.whatIf?.netWorth;
+                const maxValue = Math.max(
+                  ...calendarData.map(m => Math.max(m.statusQuo.netWorth, m.whatIf?.netWorth || 0))
+                );
+                const minValue = Math.min(
+                  ...calendarData.map(m => Math.min(m.statusQuo.netWorth, m.whatIf?.netWorth || 0))
+                );
+                const range = maxValue - minValue;
+                const netWorthPercent = range > 0 ? ((netWorth - minValue) / range) * 100 : 50;
+                const whatIfPercent = whatIfNetWorth && range > 0 ? ((whatIfNetWorth - minValue) / range) * 100 : 50;
+                
+                return (
+                  <div key={month.month} className="space-y-2">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-400">{month.monthName}</span>
+                      <div className="flex gap-4">
+                        <span className="text-purple-400">
+                          Current: ${netWorth.toLocaleString()}
+                        </span>
+                        {whatIfNetWorth && (
+                          <span className="text-green-400">
+                            What-If: ${whatIfNetWorth.toLocaleString()}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* Visual Bar Chart */}
+                    <div className="space-y-1">
+                      {/* Current Path Bar */}
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-purple-400 w-16">Current:</span>
+                        <div className="flex-1 bg-retro-darker rounded-full h-4 overflow-hidden">
+                          <div 
+                            className="h-full bg-gradient-to-r from-purple-500 to-purple-400 transition-all duration-500"
+                            style={{ width: `${Math.max(netWorthPercent, 2)}%` }}
+                          />
+                        </div>
+                      </div>
+                      
+                      {/* What-If Path Bar */}
+                      {whatIfNetWorth && (
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-green-400 w-16">What-If:</span>
+                          <div className="flex-1 bg-retro-darker rounded-full h-4 overflow-hidden">
+                            <div 
+                              className="h-full bg-gradient-to-r from-green-500 to-green-400 transition-all duration-500"
+                              style={{ width: `${Math.max(whatIfPercent, 2)}%` }}
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            
+            {/* Chart Legend */}
+            <div className="mt-6 flex items-center justify-center gap-6 text-sm">
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 bg-gradient-to-r from-purple-500 to-purple-400 rounded"></div>
+                <span className="text-gray-400">Current Path</span>
+              </div>
+              {calendarData.some(m => m.whatIf) && (
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 bg-gradient-to-r from-green-500 to-green-400 rounded"></div>
+                  <span className="text-gray-400">What-If Scenario</span>
+                </div>
+              )}
+            </div>
+          </div>
+          
+          {/* Model Performance Summary */}
+          <div className="bg-retro-darker p-4 rounded-lg border border-neon-green/30">
+            <h4 className="text-neon-green font-bold mb-3">📈 Model Performance</h4>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-purple-400">
+                  ${calendarData[calendarData.length - 1]?.statusQuo.netWorth.toLocaleString() || '0'}
+                </div>
+                <div className="text-gray-400">Final Net Worth</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-green-400">
+                  {calendarData.length > 0 ? 
+                    ((calendarData[calendarData.length - 1]?.statusQuo.netWorth || 0) - (calendarData[0]?.statusQuo.netWorth || 0)).toLocaleString() 
+                    : '0'}
+                </div>
+                <div className="text-gray-400">Total Growth</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-blue-400">
+                  {calendarData.length > 0 ? 
+                    Math.round(((calendarData[calendarData.length - 1]?.statusQuo.netWorth || 0) / (calendarData[0]?.statusQuo.netWorth || 1) - 1) * 100) 
+                    : '0'}%
+                </div>
+                <div className="text-gray-400">Growth Rate</div>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>

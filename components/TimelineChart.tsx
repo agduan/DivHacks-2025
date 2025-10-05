@@ -21,6 +21,8 @@ const TIME_RANGES: TimeRange[] = [
   { label: '1Y', months: 12 },
   { label: '5Y', months: 60 },
   { label: '10Y', months: 120 },
+  { label: '20Y', months: 240 },
+  { label: '30Y', months: 360 },
 ];
 
 export default function TimelineChart({ statusQuoData, whatIfData, onTimeRangeChange }: TimelineChartProps) {

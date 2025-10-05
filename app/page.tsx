@@ -12,10 +12,14 @@ import UserDashboard from '@/components/UserDashboard';
 import AuthModal from '@/components/AuthModal';
 import IntegrationPlaceholders from '@/components/IntegrationPlaceholders';
 import CalendarTimeline from '@/components/CalendarTimeline';
-import { FinancialModel } from '@/utils/financialModels';
+import MarketDataDisplay from '@/components/MarketDataDisplay';
+import LongTermProjection from '@/components/LongTermProjection';
+import { FinancialModel, FINANCIAL_MODELS } from '@/utils/financialModels';
 import { FinancialData, ScenarioChange, TimelinePrediction, AIAgentPrediction, OpikEvaluation } from '@/types/financial';
 import { MOCK_FINANCIAL_DATA } from '@/utils/mockData';
 import { calculateStatusQuo, calculateWhatIfScenario, determineAvatarState, generateInsights } from '@/utils/financialCalculations';
+import { calculateProjectionWithModel } from '@/utils/financialModels';
+import { fetchNessieFinancialData } from '@/utils/nessieDataIntegration';
 
 function MainApp() {
   const { user, loading } = useAuth();
@@ -126,9 +130,10 @@ function FinancialTimeMachineApp() {
   const [dinoAnimation, setDinoAnimation] = useState<'walk' | 'run' | 'hurt'>('walk');
   const [selectedModel, setSelectedModel] = useState<FinancialModel>('linear');
   const [showCalendar, setShowCalendar] = useState(false);
+  const [usingRealData, setUsingRealData] = useState(false);
 
-  // Calculate timelines
-  const statusQuoTimeline = calculateStatusQuo(financialData, timelineMonths);
+  // Calculate timelines using selected model
+  const statusQuoTimeline = calculateProjectionWithModel(financialData, timelineMonths, selectedModel);
   const whatIfTimeline = scenarioChanges.length > 0
     ? calculateWhatIfScenario(financialData, scenarioChanges, timelineMonths)
     : null;
@@ -258,6 +263,25 @@ function FinancialTimeMachineApp() {
     }
   };
 
+  // Load real financial data from Nessie API
+  const loadRealFinancialData = async () => {
+    setLoading(true);
+    try {
+      const realData = await fetchNessieFinancialData();
+      if (realData) {
+        setFinancialData(realData);
+        setUsingRealData(true);
+        console.log('✅ Loaded real financial data from Nessie API');
+      } else {
+        console.log('⚠️ Nessie API not available, using mock data');
+      }
+    } catch (error) {
+      console.error('Error loading real financial data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Don't auto-load AI predictions - only when user clicks "Travel to Next Year"
   // useEffect(() => {
   //   loadAIPredictions();
@@ -369,17 +393,19 @@ function FinancialTimeMachineApp() {
                 <span>Current Timeline</span>
                 <span>{timelineMonths} months</span>
               </div>
-              <div className="w-full bg-retro-darker rounded-full h-3 overflow-hidden">
-                <div 
-                  className="h-full bg-gradient-to-r from-neon-blue to-neon-green transition-all duration-500"
-                  style={{ width: `${Math.min((timelineMonths / 120) * 100, 100)}%` }}
-                />
-              </div>
-              <p className="text-xs text-gray-500 mt-1">
-                {timelineMonths < 12 ? 'Short-term view' : 
-                 timelineMonths < 60 ? 'Medium-term projection' : 
-                 'Long-term forecast'}
-              </p>
+                <div className="w-full bg-retro-darker rounded-full h-3 overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-neon-blue to-neon-green transition-all duration-500"
+                    style={{ width: `${Math.min((timelineMonths / 360) * 100, 100)}%` }}
+                  />
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  {timelineMonths < 12 ? 'Short-term view' :
+                   timelineMonths < 60 ? 'Medium-term projection' :
+                   timelineMonths < 120 ? 'Long-term forecast' :
+                   timelineMonths < 240 ? 'Extended forecast' :
+                   'Ultra-long-term projection'}
+                </p>
             </div>
 
             <button
@@ -458,8 +484,8 @@ function FinancialTimeMachineApp() {
         )}
 
         {/* Timeline Controls */}
-        <div className="bg-retro-gray p-4 rounded-lg border-2 border-neon-green/50 mb-6">
-          <div className="flex items-center justify-between mb-4">
+        <div className="bg-retro-gray p-6 rounded-lg border-2 border-neon-green/50 mb-6">
+          <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-neon-green uppercase tracking-wider font-vcr">
               📊 Timeline Analysis
             </h2>
@@ -474,6 +500,45 @@ function FinancialTimeMachineApp() {
               >
                 {showCalendar ? '📊 Chart View' : '📅 Calendar View'}
               </button>
+            </div>
+          </div>
+          
+          {/* Financial Model Selector */}
+          <div className="mb-4">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-neon-blue font-bold text-sm">Financial Projection Models</h3>
+              <button
+                onClick={loadRealFinancialData}
+                disabled={loading}
+                className={`px-3 py-1 rounded text-xs font-bold uppercase transition-all ${
+                  usingRealData
+                    ? 'bg-green-500 text-white'
+                    : 'bg-neon-blue text-retro-dark hover:bg-neon-green'
+                } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                {loading ? 'Loading...' : usingRealData ? '✅ Real Data' : '📊 Load Real Data'}
+              </button>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+              {Object.entries(FINANCIAL_MODELS).map(([key, model]) => (
+                <button
+                  key={key}
+                  onClick={() => setSelectedModel(key as FinancialModel)}
+                  className={`p-3 rounded-lg border-2 transition-all text-left ${
+                    selectedModel === key
+                      ? 'border-neon-blue bg-neon-blue/20'
+                      : 'border-gray-600 hover:border-neon-green'
+                  }`}
+                >
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-lg">{model.icon}</span>
+                    <span className="font-bold text-sm" style={{ color: model.color }}>
+                      {model.name}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-400">{model.description}</p>
+                </button>
+              ))}
             </div>
           </div>
         </div>
@@ -493,6 +558,18 @@ function FinancialTimeMachineApp() {
             onTimeRangeChange={setTimelineMonths}
           />
         )}
+
+        {/* Long-term Projection Display - Only for 20+ year projections */}
+        {timelineMonths >= 240 && (
+          <LongTermProjection
+            statusQuoData={statusQuoTimeline}
+            whatIfData={whatIfTimeline || undefined}
+            selectedModel={selectedModel}
+          />
+        )}
+
+        {/* Real Market Data Display - Moved under timeline */}
+        <MarketDataDisplay selectedModel={selectedModel} />
 
         {/* AI Agent Comparison - Always show, with placeholder before analysis */}
         <AIAgentComparison 
