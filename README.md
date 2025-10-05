@@ -1,122 +1,147 @@
-# Financial Time Machine ⏰
+# Finosaur.ai - Your financial time machine
 
-A playful sci-fi web app that uses AI to show you what your financial future could look like based on your current spending habits — or how things might change if you adjust them.
+A retro-styled web app that uses AI to predict your financial future. Built with three distinct AI personalities that each offer different perspectives on where your money habits will take you.
 
 ## What It Does
 
-Ever wonder where your money habits will take you? This app takes your income, expenses, and financial data, then creates two timelines:
+Financial Time Machine takes your income, expenses, and spending habits, then shows you two possible futures:
 
-1. **Status Quo**: What happens if you keep doing what you're doing
-2. **What-If Scenarios**: What happens if you make changes (cut spending, save more, etc.)
+**Status Quo**: Where you'll end up if you keep your current habits
 
-You get visual comparisons with pixel-art avatars showing your current vs. future financial health, complete with charts and AI-powered insights.
+**What-If Scenarios**: Where you could go if you make specific changes
 
-## Features
+The app visualizes these paths with pixel-art dinosaurs that evolve based on your financial health, alongside detailed charts and insights from three AI financial advisors.
 
-- **Data Input**: Import mock transaction data from Capital One's Nessie API or enter your own numbers
-- **AI Forecasting**: 3 different versions of Gemini predicts your financial future
-- **Timeline Visualization**: Side-by-side charts comparing different financial paths
-- **Avatar States**: Watch your financial avatar evolve from struggling → stable → thriving → wealthy
-- **AI Comparison Panel**: See how different AI models predict your future and which one is most reliable (using Opik evaluation)
-- **What-If Explorer**: Adjust spending in different categories and see instant results
-- **Future-Ready**: Placeholders for Echo savings integration and premium features
+## The AI Advisors
+
+Three variations of Google's Gemini model act as your financial coaches, each with their own personality:
+
+- **Casey the Calculator**: A pragmatic analyst who sticks to data-driven predictions
+- **Sunny Saver**: An optimistic wealth coach focused on motivation and growth potential
+- **Grump Gains**: A blunt, sarcastic advisor who doesn't sugarcoat the hard truths
+
+Before you run any analysis, they introduce themselves. After you click "Travel to Next Year," they provide detailed predictions and insights based on your financial data.
+
+## Key Features
+
+**Timeline Visualization**: View your financial trajectory over months or years with interactive charts and calendar views
+
+**What-If Explorer**: Test different spending scenarios (cut food spending by 20%, add $100 monthly savings, etc.) and see immediate impacts
+
+**Dynamic Avatars**: Watch your financial dinosaur change from struggling to thriving as your net worth improves
+
+**Multi-Agent AI Analysis**: Compare predictions from three different AI perspectives, complete with confidence scores
+
+**Progress Tracking**: Enhanced time travel button shows how far you've explored into your financial future
+
+**Nessie Integration**: Import transaction data from Capital One's developer API or use demo data
+
+**Guest Mode**: Try the app without creating an account
 
 ## Tech Stack
 
-- **Framework**: Next.js 14 (App Router)
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS (custom sci-fi/retro theme)
-- **Charts**: Recharts
-- **API Integration**: Google Gemini API, Opik API for AI Evaluation, Capital One Nessie API (mock data included)
-- **AI Evaluation**: Opik
+**Framework**: Next.js 14 with App Router
+
+**Language**: TypeScript
+
+**Styling**: Tailwind CSS with custom retro/cyberpunk theme and pixel art assets
+
+**Charts**: Recharts for data visualization
+
+**AI**: Google Gemini API with custom personality prompts
+
+**APIs**: Capital One Nessie (banking data), Echo (authentication)
+
+**Fonts**: VCR OSD Mono for that authentic retro terminal look
 
 ## Getting Started
 
-1. **Install dependencies**:
-   ```bash
-   npm install
-   ```
+Install dependencies:
+```bash
+npm install
+```
 
-2. **Run the development server**:
-   ```bash
-   npm run dev
-   ```
+Run the development server:
+```bash
+npm run dev
+```
 
-3. **Open your browser**: Navigate to `http://localhost:3000`
+Open http://localhost:3000 in your browser.
 
-4. **(Optional) Enable Real AI Evaluation**:
-   ```bash
-   cp env.example .env.local
-   ```
-   Then add your API keys:
-   - **Opik** (free): Get key at [comet.com/opik](https://www.comet.com/site/products/opik/)
-   - **Google Gemini** (optional): For real predictions
-   
-   See [OPIK_INTEGRATION.md](./OPIK_INTEGRATION.md) for detailed setup guide
+### Optional: Add Real API Keys
+
+Create a `.env.local` file with:
+
+```
+GEMINI_API_KEY=your_gemini_key_here
+NESSIE_API_KEY=your_nessie_key_here
+```
+
+The app works fine without these (it uses mock data and fallback predictions), but real API keys enable live AI analysis.
 
 ## Project Structure
 
 ```
-├── app/
-│   ├── api/              # API routes (forecast, nessie, ai-agents)
-│   ├── globals.css       # Global styles + retro theme
-│   ├── layout.tsx        # Root layout
-│   └── page.tsx          # Main page
-├── components/
-│   ├── Avatar.tsx              # Financial state avatar
-│   ├── AIAgentComparison.tsx   # Multi-AI comparison
-│   ├── FinancialInputForm.tsx  # Income/expense inputs
-│   ├── IntegrationPlaceholders.tsx  # Echo widget
-│   ├── ScenarioAdjuster.tsx    # What-if scenario builder
-│   └── TimelineChart.tsx       # Financial timeline graph
-├── types/
-│   └── financial.ts      # TypeScript type definitions
-└── utils/
-    ├── financialCalculations.ts  # Core forecast logic
-    └── mockData.ts               # Sample data & Nessie parser
+app/
+  api/
+    ai-agents/        # Handles AI personality analysis
+    forecast/         # Financial calculations endpoint
+    nessie/          # Banking data integration
+    auth/            # Sign in/sign up routes
+  globals.css        # Retro theme styles + dino animations
+  page.tsx           # Main application page
+
+components/
+  AIAgentComparison.tsx   # Three-agent comparison cards with speech bubbles
+  Avatar.tsx              # Pixel art financial state indicators
+  DinoSprite.tsx          # Animated dinosaur sprites
+  FinancialInputForm.tsx  # Income/expense input
+  ScenarioAdjuster.tsx    # What-if scenario builder
+  TimelineChart.tsx       # Graph visualization
+  CalendarTimeline.tsx    # Calendar view of predictions
+
+utils/
+  financialCalculations.ts  # Core forecasting logic
+  geminiPersonalities.ts    # AI personality definitions and API calls
+  nessieIntegration.ts      # Banking API integration
+  mockData.ts              # Demo data
+
+types/
+  financial.ts      # TypeScript definitions
 ```
 
-## How It Works
+## How to Use It
 
-1. **Input**: Enter your monthly income, expenses, savings, and debt (or use the mock data)
-2. **Adjust**: Add "what-if" changes like reducing food spending by 20% or saving $50/month
-3. **Travel**: Click "Travel to Next Year!" to see your financial future
-4. **Compare**: View status quo vs. what-if timelines side by side
-5. **Analyze**: Check AI agent predictions and Opik reliability scores
+1. Sign in or continue as guest
+2. Enter your monthly income, expenses, current savings, and debt (or use the demo data)
+3. Optionally add what-if scenarios (reduce dining out, increase savings, etc.)
+4. Click "Travel to Next Year" to see your 12-month forecast
+5. Watch the timeline progress bar grow as you explore further into the future
+6. Review predictions from all three AI advisors and compare their insights
+7. Adjust the timeline view between chart and calendar modes
 
 ## Customization
 
-- **Change AI logic**: Edit `app/api/ai-agents/route.ts`
-- **Change theme colors**: Update `tailwind.config.ts`
-- **Adjust calculation logic**: Modify `utils/financialCalculations.ts`
-- **Add real APIs**: Replace mock data in API routes with actual calls
+**Change AI personalities**: Edit `utils/geminiPersonalities.ts` to modify prompts and behavior
 
-## Future Enhancements
+**Adjust theme colors**: Update color definitions in `tailwind.config.ts`
 
-  
-- Echo monetization for premium features
-- Multi-year forecasts (3, 5, 10 years out)
-- Social sharing of anonymized financial journeys
-- Gamification & achievement badges
-- Export reports as PDF
+**Modify calculations**: Change forecast logic in `utils/financialCalculations.ts`
 
-## AI & Opik Integration
+**Add new dinosaur animations**: Update sprite sheets in `public/dinos/` and CSS in `globals.css`
 
-The app supports **real AI evaluation** with Opik:
+## Known Limitations
 
-- **Without API keys**: Uses mock predictions and evaluations (perfect for demos)
-- **With Opik key**: Tracks predictions and provides real consistency/accuracy scores
-- **With Gemini key**: Gets actual insights from Google Gemini
+This is a hackathon project, so some features are simplified:
 
-All integrations are optional and the app works great without them!
+- Financial calculations are month-to-month projections, not sophisticated portfolio modeling
+- AI predictions are based on patterns, not real financial advice
+- Nessie API integration uses mock data (Capital One's sandbox)
+- Guest mode data isn't persisted
+- Timeline is currently limited to viewing future months, not years
 
-📖 **Full setup guide**: [OPIK_INTEGRATION.md](./OPIK_INTEGRATION.md)
+## About This Project
 
-## Notes
+Built for DivHacks 2025. The goal was to make financial planning less intimidating by adding personality, humor, and retro gaming aesthetics to what's usually a pretty dry topic.
 
-- This is a hackathon project built for learning and demonstration
-- Core financial calculations are real and functional
-- AI integrations can be mock (for demo) or real (with API keys)
-- Opik integration is production-ready when you add your API key
-
-Built for DivHacks 2025 🚀
+The three AI advisor concept came from wanting to show that financial predictions aren't absolute truth - they're perspectives shaped by different assumptions and attitudes toward risk and growth.
