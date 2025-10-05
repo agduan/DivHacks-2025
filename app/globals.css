@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/* VCR OSD Mono Font */
+@font-face {
+  font-family: 'VCR OSD Mono';
+  src: local('VCR OSD Mono'), local('VCR-OSD-Mono');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 * {
   box-sizing: border-box;
   padding: 0;
@@ -33,6 +42,13 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #5dd98a;
   box-shadow: 0 0 12px rgba(93, 217, 138, 0.8);
+}
+
+/* VCR OSD Mono Font for Titles */
+.font-vcr {
+  font-family: 'VCR OSD Mono', 'Courier New', monospace;
+  font-weight: normal;
+  letter-spacing: 0.05em;
 }
 
 /* Enhanced sci-fi glow effects */

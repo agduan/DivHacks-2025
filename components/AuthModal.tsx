@@ -70,9 +70,9 @@ export default function AuthModal({ isOpen, onClose, mode }: AuthModalProps) {
                 {isButtonHovered ? 'Running to your future!' : 'Ready when you are...'}
               </span>
             </div>
-            <h2 className="text-2xl font-bold text-neon-purple uppercase tracking-wider">
-              {mode === 'signin' ? 'Sign In' : 'Sign Up'}
-            </h2>
+          <h2 className="text-2xl font-bold text-neon-purple uppercase tracking-wider font-vcr">
+            {mode === 'signin' ? 'Sign In' : 'Sign Up'}
+          </h2>
           </div>
           <button
             onClick={onClose}

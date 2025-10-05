@@ -52,7 +52,7 @@ function MainApp() {
               animation={isButtonHovered ? 'run' : 'walk'} 
             />
           </div>
-          <h1 className="text-6xl font-bold text-neon-purple uppercase tracking-wider mb-6">
+          <h1 className="text-6xl font-bold text-neon-purple uppercase tracking-wider mb-6 font-vcr">
             Financial Time Machine
           </h1>
           <p className="text-xl text-gray-300 mb-8">
@@ -86,7 +86,7 @@ function MainApp() {
           </div>
 
           <div className="mt-8 p-4 bg-retro-gray rounded border border-neon-purple/30">
-            <h3 className="text-lg font-bold text-neon-purple uppercase tracking-wide mb-3">
+            <h3 className="text-lg font-bold text-neon-purple uppercase tracking-wide mb-3 font-vcr">
               Features
             </h3>
             <ul className="text-left text-gray-300 space-y-2">
@@ -310,7 +310,7 @@ function FinancialTimeMachineApp() {
             <div className="flex items-center gap-8">
               <DinoSprite variant={getDinoVariant()} animation={dinoAnimation} className="ml-2" />
               <div className="ml-2">
-                <h1 className="text-3xl font-bold text-neon-blue uppercase tracking-wider neon-glow">
+                <h1 className="text-3xl font-bold text-neon-blue uppercase tracking-wider neon-glow font-vcr">
                   Financial Time Machine
                 </h1>
                 <p className="text-sm text-neon-blue mt-1">
@@ -390,7 +390,7 @@ function FinancialTimeMachineApp() {
         {/* Insights */}
         {insights.length > 0 && (
           <div className="bg-retro-gray p-6 rounded-lg border-2 border-neon-green/50">
-            <h2 className="text-2xl font-bold text-neon-green uppercase tracking-wider mb-4">
+            <h2 className="text-2xl font-bold text-neon-green uppercase tracking-wider mb-4 font-vcr">
               Key Insights
             </h2>
             <ul className="space-y-2">

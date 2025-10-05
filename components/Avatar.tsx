@@ -56,7 +56,7 @@ export default function Avatar({ state, label, netWorth, savings, debt }: Avatar
       </div>
 
       {/* Label */}
-      <h3 className="text-neon-blue font-bold text-lg uppercase tracking-wider">
+      <h3 className="text-neon-blue font-bold text-lg uppercase tracking-wider font-vcr">
         {label}
       </h3>
 
