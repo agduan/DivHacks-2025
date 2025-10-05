@@ -57,23 +57,23 @@ function createFinancialPrompt(data: FinancialData, timeline: TimelinePrediction
   return `You are a financial advisor AI. Analyze this financial situation and provide insights.
 
 Current Financial Data:
-- Monthly Income: $${data.monthlyIncome.toLocaleString()}
-- Monthly Expenses: $${totalExpenses.toLocaleString()}
+- Monthly Income: $${data.monthlyIncome.toFixed(2)}
+- Monthly Expenses: $${totalExpenses.toFixed(2)}
   - Housing: $${data.monthlyExpenses.housing}
   - Food: $${data.monthlyExpenses.food}
   - Transportation: $${data.monthlyExpenses.transportation}
   - Entertainment: $${data.monthlyExpenses.entertainment}
   - Utilities: $${data.monthlyExpenses.utilities}
   - Other: $${data.monthlyExpenses.other}
-- Net Monthly: $${netMonthly.toLocaleString()}
-- Current Savings: $${data.currentSavings.toLocaleString()}
-- Current Debt: $${data.currentDebt.toLocaleString()}
-${data.savingsGoal ? `- Savings Goal: $${data.savingsGoal.toLocaleString()}` : ''}
+- Net Monthly: $${netMonthly.toFixed(2)}
+- Current Savings: $${data.currentSavings.toFixed(2)}
+- Current Debt: $${data.currentDebt.toFixed(2)}
+${data.savingsGoal ? `- Savings Goal: $${data.savingsGoal.toFixed(2)}` : ''}
 
 Projected Timeline (Status Quo - ${timeline.length} months):
-- Starting Net Worth: $${timeline[0].netWorth.toLocaleString()}
-- Ending Net Worth: $${timeline[timeline.length - 1].netWorth.toLocaleString()}
-- Total Change: $${(timeline[timeline.length - 1].netWorth - timeline[0].netWorth).toLocaleString()}
+- Starting Net Worth: $${timeline[0].netWorth.toFixed(2)}
+- Ending Net Worth: $${timeline[timeline.length - 1].netWorth.toFixed(2)}
+- Total Change: $${(timeline[timeline.length - 1].netWorth - timeline[0].netWorth).toFixed(2)}
 
 Provide:
 1. Two key insights about their financial trajectory (each under 15 words)
@@ -229,12 +229,25 @@ export async function analyzeWithGemini(request: AIAnalysisRequest): Promise<AIA
   try {
     logger.info('Gemini', 'Requesting analysis');
 
-    const model = googleClient.getGenerativeModel({ model: API_CONFIG.google.model });
+    const model = googleClient.getGenerativeModel({ 
+      model: API_CONFIG.google.model,
+    });
     const result = await model.generateContent(createFinancialPrompt(request.financialData, request.timeline));
     const response = await result.response;
     const content = response.text();
 
-    const parsed = JSON.parse(content);
+    logger.info('Gemini', `Received response: ${content.substring(0, 100)}...`);
+
+    // Parse JSON response, handling markdown code blocks if present
+    let parsed;
+    try {
+      const jsonMatch = content.match(/```json\n?([\s\S]*?)\n?```/) || content.match(/\{[\s\S]*\}/);
+      const jsonText = jsonMatch ? (jsonMatch[1] || jsonMatch[0]) : content;
+      parsed = JSON.parse(jsonText);
+    } catch (parseError) {
+      logger.warn('Gemini', 'Failed to parse JSON response', { content: content.substring(0, 200) });
+      throw new Error(`Failed to parse JSON: ${parseError instanceof Error ? parseError.message : 'Unknown error'}`);
+    }
 
     // Track success
     monitoring.trackAPICall({
@@ -249,7 +262,17 @@ export async function analyzeWithGemini(request: AIAnalysisRequest): Promise<AIA
 
     return parsed;
   } catch (error) {
-    logger.error('Gemini', 'Analysis failed', error as Error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    logger.error('Gemini', `Analysis failed: ${errorMessage}`, error as Error);
+    
+    // Check for common API errors
+    if (errorMessage.includes('API_KEY_INVALID') || errorMessage.includes('401')) {
+      logger.error('Gemini', 'API key is invalid or expired');
+    } else if (errorMessage.includes('QUOTA_EXCEEDED') || errorMessage.includes('429')) {
+      logger.error('Gemini', 'API quota exceeded');
+    } else if (errorMessage.includes('models/') || errorMessage.includes('404')) {
+      logger.error('Gemini', `Model ${API_CONFIG.google.model} not found`);
+    }
     
     monitoring.trackAPICall({
       service: 'Gemini',
@@ -378,7 +401,7 @@ function createFallbackPrediction(agentName: string, timeline: TimelinePredictio
     predictions: timeline,
     confidence: 0.5,
     insights: [
-      `Net worth ${trend} by $${Math.abs(change).toLocaleString()} over ${timeline.length} months`,
+      `Net worth ${trend} by $${Math.abs(change).toFixed(2)} over ${timeline.length} months`,
       `${agentName} analysis unavailable - showing baseline projection`,
     ],
     reasoning: 'AI service unavailable, showing calculated projections based on current financial data',

@@ -25,9 +25,9 @@ export const FinancialDataSchema = z.object({
 });
 
 export const ScenarioChangeSchema = z.object({
-  id: z.string(),
+  id: z.string().optional(),
   category: z.string().min(1, 'Category is required'),
-  changeType: z.enum(['income', 'expense']),
+  changeType: z.enum(['income', 'expense']).optional(),
   changePercent: z.number().optional(),
   changeAmount: z.number().optional(),
   description: z.string().optional(),

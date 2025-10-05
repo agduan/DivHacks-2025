@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getMultiAgentPredictions } from '@/utils/aiAgents';
+import { getThreePersonalityAnalyses } from '@/utils/geminiPersonalities';
 import { evaluateMultipleAgents } from '@/utils/opikEvaluation';
 import { logger } from '@/utils/monitoring';
 import { z } from 'zod';
@@ -55,19 +55,15 @@ export async function POST(request: NextRequest) {
     const { calculateFinancialProjection } = await import('@/utils/financialCalculations');
     const timeline = calculateFinancialProjection(financialData, timelineMonths);
 
-    // Get predictions from all available AI agents
-    const predictions = await getMultiAgentPredictions(
-      financialData,
-      timeline,
-      scenarioChanges
-    );
+    // Get analyses from three Gemini personalities
+    const predictions = await getThreePersonalityAnalyses(financialData, timeline);
 
-    // Evaluate all agents using OPIK-style evaluation
+    // Evaluate all personalities using OPIK-style evaluation
     const evaluations = evaluateMultipleAgents(predictions);
 
     logger.info(
       SERVICE_NAME,
-      `Completed predictions from ${predictions.length} agents with evaluations`
+      `Completed analyses from ${predictions.length} Gemini personalities with evaluations`
     );
 
     return NextResponse.json({
@@ -93,23 +89,24 @@ export async function POST(request: NextRequest) {
 
 /**
  * GET /api/ai-agents
- * Get status of available AI agents
+ * Get status of Gemini AI personalities
  */
 export async function GET(request: NextRequest) {
   try {
-    const { getAvailableAIAgents, API_CONFIG } = await import('@/config');
-    const availableAgents = getAvailableAIAgents();
+    const { API_CONFIG } = await import('@/config');
+    const geminiConfigured = !!API_CONFIG.google.apiKey;
 
-    logger.info(SERVICE_NAME, `Available agents: ${availableAgents.join(', ')}`);
+    logger.info(SERVICE_NAME, `Gemini personalities configured: ${geminiConfigured}`);
 
     return NextResponse.json({
-      availableAgents,
-      totalAgents: 3,
-      status: {
-        'GPT-4': !!API_CONFIG.openai.apiKey,
-        'Claude': !!API_CONFIG.anthropic.apiKey,
-        'Gemini': !!API_CONFIG.google.apiKey,
-      },
+      personalities: [
+        '💼 The Realist',
+        '🚀 The Optimist',
+        '🔥 The Cynic',
+      ],
+      totalPersonalities: 3,
+      geminiConfigured,
+      description: 'Three distinct Gemini AI personalities providing unique financial perspectives',
       success: true,
     });
   } catch (error) {
@@ -117,7 +114,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(
       {
-        error: 'Failed to check AI agents status',
+        error: 'Failed to check AI status',
       },
       { status: 500 }
     );

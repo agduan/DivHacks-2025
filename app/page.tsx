@@ -226,14 +226,15 @@ function FinancialTimeMachineApp() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          statusQuoTimeline,
           financialData,
+          timelineMonths,
+          scenarioChanges,
         }),
       });
 
       if (response.ok) {
         const data = await response.json();
-        setAiAgents(data.agents || []);
+        setAiAgents(data.predictions || []); // Fixed: API returns 'predictions' not 'agents'
         setEvaluations(data.evaluations || []);
         setOpikComparison(data.comparison || null);
       } else {
@@ -253,17 +254,18 @@ function FinancialTimeMachineApp() {
     }
   };
 
-  // Load AI predictions when data changes
-  useEffect(() => {
-    loadAIPredictions();
-  }, [financialData, timelineMonths, scenarioChanges]);
+  // Don't auto-load AI predictions - only when user clicks "Travel to Next Year"
+  // useEffect(() => {
+  //   loadAIPredictions();
+  // }, [financialData, timelineMonths, scenarioChanges]);
 
   const handleTimeTravel = async () => {
     setLoading(true);
-    // Dino keeps running during calculation
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setTimelineMonths(timelineMonths + 12);
+    setDinoAnimation('run');
+    
+    // Run AI analysis (without changing timelineMonths)
+    await loadAIPredictions();
+    
     setLoading(false);
     
     // After calculation, show hurt animation
@@ -420,13 +422,32 @@ function FinancialTimeMachineApp() {
           onTimeRangeChange={setTimelineMonths}
         />
 
-        {/* AI Agent Comparison */}
-        <AIAgentComparison 
-          agents={aiAgents.length > 0 ? aiAgents : mockAIAgents} 
-          evaluations={evaluations.length > 0 ? evaluations : mockEvaluations}
-          comparison={opikComparison}
-          loading={aiLoading}
-        />
+        {/* AI Agent Comparison - Only show after user clicks "Travel to Next Year" */}
+        {aiAgents.length > 0 && (
+          <AIAgentComparison 
+            agents={aiAgents} 
+            evaluations={evaluations}
+            comparison={opikComparison}
+            loading={aiLoading}
+          />
+        )}
+        
+        {/* Prompt to run analysis */}
+        {aiAgents.length === 0 && !aiLoading && (
+          <div className="bg-retro-gray p-8 rounded-lg border-2 border-neon-purple/50 text-center">
+            <h3 className="text-2xl font-bold text-neon-purple mb-4 font-vcr">
+              🤖 AI Financial Advisors
+            </h3>
+            <p className="text-gray-300 mb-6">
+              Click "Travel to Next Year" to get personalized insights from three AI personalities!
+            </p>
+            <div className="flex justify-center gap-6 text-4xl">
+              <span>💼</span>
+              <span>🚀</span>
+              <span>🔥</span>
+            </div>
+          </div>
+        )}
 
         {/* Integration Placeholders */}
         <IntegrationPlaceholders />

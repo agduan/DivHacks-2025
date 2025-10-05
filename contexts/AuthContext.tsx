@@ -25,7 +25,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const token = localStorage.getItem('echo_token');
     if (token) {
-      verifyToken(token);
+      // Set a timeout to prevent infinite loading
+      const timeout = setTimeout(() => {
+        console.warn('Auth verification timed out');
+        setLoading(false);
+      }, 3000); // 3 second timeout
+      
+      verifyToken(token).finally(() => {
+        clearTimeout(timeout);
+      });
     } else {
       setLoading(false);
     }

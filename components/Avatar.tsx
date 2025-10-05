@@ -73,21 +73,21 @@ export default function Avatar({ state, label, netWorth, savings, debt }: Avatar
             className="font-bold"
             style={{ color: netWorth >= 0 ? '#66cc88' : '#cc6666' }}
           >
-            ${netWorth.toLocaleString()}
+            ${netWorth.toFixed(2)}
           </span>
         </div>
         
         <div className="flex justify-between items-center p-2 bg-retro-darker rounded">
           <span className="text-gray-400">Savings:</span>
           <span className="text-neon-green font-bold">
-            ${savings.toLocaleString()}
+            ${savings.toFixed(2)}
           </span>
         </div>
         
         <div className="flex justify-between items-center p-2 bg-retro-darker rounded">
           <span className="text-gray-400">Debt:</span>
           <span className="text-neon-pink font-bold">
-            ${debt.toLocaleString()}
+            ${debt.toFixed(2)}
           </span>
         </div>
       </div>

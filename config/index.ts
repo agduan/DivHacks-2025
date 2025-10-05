@@ -55,8 +55,8 @@ export const API_CONFIG = {
 
   // Google AI API (Gemini)
   google: {
-    apiKey: getEnvVar('GOOGLE_AI_API_KEY', false),
-    model: 'gemini-pro',
+    apiKey: getEnvVar('GEMINI_API_KEY', false) || getEnvVar('GOOGLE_AI_API_KEY', false),
+    model: 'gemini-2.5-flash', // Using latest Gemini 2.5 Flash model
     timeout: 30000,
     retries: 2,
   },

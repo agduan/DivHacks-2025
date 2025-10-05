@@ -14,7 +14,7 @@ export default function AIAgentComparison({ agents, evaluations, comparison, loa
     <div className="bg-retro-gray p-6 rounded-lg border-2 border-neon-purple/50">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-neon-purple uppercase tracking-wider font-vcr">
-          AI Agent Comparison
+          🤖 AI Financial Advisors
         </h2>
         <div className="flex items-center gap-4">
           {comparison && (
@@ -58,19 +58,19 @@ export default function AIAgentComparison({ agents, evaluations, comparison, loa
                 <div className="flex justify-between">
                   <span className="text-neon-blue">Net Worth:</span>
                   <span className="text-neon-green font-bold">
-                    ${finalPrediction.netWorth.toLocaleString()}
+                    ${finalPrediction.netWorth.toFixed(2)}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-neon-purple">Savings:</span>
                   <span className="text-neon-blue font-bold">
-                    ${finalPrediction.savings.toLocaleString()}
+                    ${finalPrediction.savings.toFixed(2)}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-neon-pink">Debt:</span>
                   <span className="text-neon-pink font-bold">
-                    ${finalPrediction.debt.toLocaleString()}
+                    ${finalPrediction.debt.toFixed(2)}
                   </span>
                 </div>
               </div>
