@@ -145,3 +145,7 @@ This is a hackathon project, so some features are simplified:
 Built for DivHacks 2025. The goal was to make financial planning less intimidating by adding personality, humor, and retro gaming aesthetics to what's usually a pretty dry topic.
 
 The three AI advisor concept came from wanting to show that financial predictions aren't absolute truth - they're perspectives shaped by different assumptions and attitudes toward risk and growth.
+
+## Credits
+
+- Dinosaur pixel art sprites by Arks: https://arks.itch.io/dino-characters (Creative Commons Attribution v4.0)
