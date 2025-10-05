@@ -78,7 +78,9 @@ export default function TimelineChart({ statusQuoData, whatIfData, onTimeRangeCh
           />
           <YAxis
             stroke="#4a9eff"
-            label={{ value: 'Amount ($)', angle: -90, position: 'insideLeft', fill: '#4a9eff' }}
+            label={{ value: 'Amount ($)', angle: -90, position: 'insideLeft', offset: 10, fill: '#4a9eff' }}
+            tickFormatter={(value) => `$${value.toLocaleString()}`}
+            width={100}
           />
           <Tooltip
             contentStyle={{
@@ -87,6 +89,8 @@ export default function TimelineChart({ statusQuoData, whatIfData, onTimeRangeCh
               borderRadius: '8px',
             }}
             labelStyle={{ color: '#4a9eff' }}
+            labelFormatter={(label) => `${label} months`}
+            formatter={(value: number) => `$${value.toFixed(2)}`}
           />
           <Legend 
             wrapperStyle={{ paddingTop: '20px' }}

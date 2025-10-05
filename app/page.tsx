@@ -41,7 +41,7 @@ function MainApp() {
     return (
       <div className="min-h-screen bg-retro-darker flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin text-neon-blue text-4xl mb-4">⏳</div>
+          <div className="animate-spin w-12 h-12 border-4 border-neon-blue border-t-transparent rounded-full mx-auto mb-4"></div>
           <p className="text-neon-blue text-lg">Loading finosaur.ai...</p>
         </div>
       </div>
@@ -131,6 +131,30 @@ function FinancialTimeMachineApp() {
   const [selectedModel, setSelectedModel] = useState<FinancialModel>('linear');
   const [showCalendar, setShowCalendar] = useState(false);
   const [usingRealData, setUsingRealData] = useState(false);
+  const [activeSection, setActiveSection] = useState<string>('');
+
+  // Scroll spy effect to track active section
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = ['ai-advisors', 'timeline-section', 'market-section'];
+      const scrollPosition = window.scrollY + 200; // Offset for header
+
+      for (const sectionId of sections) {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          const { offsetTop, offsetHeight } = element;
+          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
+            setActiveSection(sectionId);
+            break;
+          }
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Check initial position
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Calculate timelines using selected model
   const statusQuoTimeline = calculateProjectionWithModel(financialData, timelineMonths, selectedModel);
@@ -226,7 +250,7 @@ function FinancialTimeMachineApp() {
 
   // Load AI predictions with OPIK evaluation
   const loadAIPredictions = async () => {
-    console.log('🚀 Loading AI predictions with OPIK evaluation...', { financialData, timelineMonths });
+    console.log('Loading AI predictions with OPIK evaluation...', { financialData, timelineMonths });
     setAiLoading(true);
     try {
       const response = await fetch('/api/ai-agents', {
@@ -352,14 +376,43 @@ function FinancialTimeMachineApp() {
             <div className="flex items-center gap-8">
               <DinoSprite variant={getDinoVariant()} animation={dinoAnimation} className="ml-2" />
               <div className="ml-2">
-                <h1 className="text-3xl font-bold text-neon-blue uppercase tracking-wider neon-glow font-vcr">
+                <h1 className="text-3xl font-extrabold text-neon-blue uppercase tracking-wider minimal-glow font-vcr">
                   finosaur.ai
                 </h1>
-                <p className="text-sm text-neon-blue mt-1">
+                <p className="text-base text-neon-blue mt-1 italic">
                   See your financial future before it happens
                 </p>
               </div>
             </div>
+            <nav className="flex items-center gap-10">
+              <a 
+                href="#ai-advisors" 
+                className={`hover:text-neon-blue transition-colors font-vcr flex flex-col items-center ${
+                  activeSection === 'ai-advisors' ? 'text-white' : 'text-gray-400'
+                }`}
+              >
+                <span className="text-xs text-gray-500 mb-1">01</span>
+                <span className="text-base uppercase tracking-wide">AI Advisors</span>
+              </a>
+              <a 
+                href="#timeline-section" 
+                className={`hover:text-neon-blue transition-colors font-vcr flex flex-col items-center ${
+                  activeSection === 'timeline-section' ? 'text-white' : 'text-gray-400'
+                }`}
+              >
+                <span className="text-xs text-gray-500 mb-1">02</span>
+                <span className="text-base uppercase tracking-wide">Timeline</span>
+              </a>
+              <a 
+                href="#market-section" 
+                className={`hover:text-neon-blue transition-colors font-vcr flex flex-col items-center ${
+                  activeSection === 'market-section' ? 'text-white' : 'text-gray-400'
+                }`}
+              >
+                <span className="text-xs text-gray-500 mb-1">03</span>
+                <span className="text-base uppercase tracking-wide">Market Projection</span>
+              </a>
+            </nav>
             <div className="text-right">
               <p className="text-sm text-neon-blue">Viewing</p>
               <p className="text-xl font-bold text-neon-green">{timelineMonths} Months</p>
@@ -384,7 +437,7 @@ function FinancialTimeMachineApp() {
         <div className="bg-retro-gray p-6 rounded-lg border-2 border-neon-green/50">
           <div className="text-center">
             <h2 className="text-2xl font-bold text-neon-green uppercase tracking-wider font-vcr mb-4">
-              ⏰ Time Travel Controls
+              Time Travel Controls
             </h2>
             
             {/* Timeline Progress */}
@@ -424,7 +477,7 @@ function FinancialTimeMachineApp() {
                 </span>
               ) : (
                 <span className="flex items-center gap-2">
-                  🚀 TRAVEL TO NEXT YEAR
+                  TRAVEL TO NEXT YEAR
                 </span>
               )}
             </button>
@@ -483,11 +536,21 @@ function FinancialTimeMachineApp() {
           </div>
         )}
 
+        {/* AI Agent Comparison - Always show, with placeholder before analysis */}
+        <div id="ai-advisors">
+          <AIAgentComparison 
+          agents={aiAgents} 
+          evaluations={evaluations}
+          comparison={opikComparison}
+          loading={aiLoading}
+        />
+        </div>
+
         {/* Timeline Controls */}
-        <div className="bg-retro-gray p-6 rounded-lg border-2 border-neon-green/50 mb-6">
+        <div id="timeline-section" className="bg-retro-gray p-6 rounded-lg border-2 border-neon-green/50 mb-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-neon-green uppercase tracking-wider font-vcr">
-              📊 Timeline Analysis
+              Timeline Analysis
             </h2>
             <div className="flex gap-2">
               <button
@@ -498,7 +561,7 @@ function FinancialTimeMachineApp() {
                     : 'bg-retro-darker text-gray-400 hover:text-neon-blue'
                 }`}
               >
-                {showCalendar ? '📊 Chart View' : '📅 Calendar View'}
+                {showCalendar ? 'Chart View' : 'Calendar View'}
               </button>
             </div>
           </div>
@@ -516,7 +579,7 @@ function FinancialTimeMachineApp() {
                     : 'bg-neon-blue text-retro-dark hover:bg-neon-green'
                 } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
-                {loading ? 'Loading...' : usingRealData ? '✅ Real Data' : '📊 Load Real Data'}
+                {loading ? 'Loading...' : usingRealData ? 'Real Data' : 'Load Real Data'}
               </button>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -569,15 +632,9 @@ function FinancialTimeMachineApp() {
         )}
 
         {/* Real Market Data Display - Moved under timeline */}
-        <MarketDataDisplay selectedModel={selectedModel} />
-
-        {/* AI Agent Comparison - Always show, with placeholder before analysis */}
-        <AIAgentComparison 
-          agents={aiAgents} 
-          evaluations={evaluations}
-          comparison={opikComparison}
-          loading={aiLoading}
-        />
+        <div id="market-section">
+          <MarketDataDisplay selectedModel={selectedModel} />
+        </div>
 
   {/* Integration Placeholders removed as requested */}
       </div>
@@ -585,9 +642,11 @@ function FinancialTimeMachineApp() {
       {/* Footer */}
       <footer className="border-t-2 border-neon-purple/50 bg-retro-darker/80 backdrop-blur-sm mt-12">
         <div className="container mx-auto px-4 py-6 text-center text-gray-400 text-sm">
-          <p>Built with love for DivHacks 2025</p>
+          <p>
+            Built for DivHacks 2025 @ Columbia • <a href="https://github.com/agduan/DivHacks-2025" target="_blank" rel="noopener noreferrer" className="text-neon-blue hover:text-neon-green transition-colors">GitHub</a>
+          </p>
           <p className="mt-2">
-            Powered by Next.js • TypeScript • Tailwind CSS • Recharts • Capital One Nessie API
+            Powered by Next.js • TypeScript • Tailwind CSS • Recharts • Google Gemini API • Capital One Nessie API
           </p>
         </div>
       </footer>
