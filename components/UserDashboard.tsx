@@ -25,7 +25,7 @@ export default function UserDashboard() {
             {user.name.charAt(0).toUpperCase()}
           </div>
           <div>
-            <h2 className="text-xl font-bold text-neon-purple uppercase tracking-wide">
+            <h2 className="text-xl font-bold text-neon-purple uppercase tracking-wide font-vcr">
               Welcome, {user.name}
             </h2>
             <p className="text-gray-400 text-sm">{user.email}</p>

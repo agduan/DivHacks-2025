@@ -137,7 +137,7 @@ export default function FinancialInputForm({ initialData, onDataChange }: Financ
   return (
     <div className="bg-retro-gray p-6 rounded-lg border-2 border-neon-purple/50 space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-neon-purple uppercase tracking-wider">
+        <h2 className="text-2xl font-bold text-neon-purple uppercase tracking-wider font-vcr">
           Financial Input
         </h2>
         <div className="flex items-center gap-2">
@@ -163,7 +163,7 @@ export default function FinancialInputForm({ initialData, onDataChange }: Financ
 
       {/* Nessie Integration Section */}
       <div className="bg-retro-darker p-4 rounded-lg border border-neon-blue/30">
-        <h3 className="text-lg font-bold text-neon-blue uppercase tracking-wide mb-3">
+        <h3 className="text-lg font-bold text-neon-blue uppercase tracking-wide mb-3 font-vcr">
           Load from Nessie API
         </h3>
         
@@ -261,7 +261,7 @@ export default function FinancialInputForm({ initialData, onDataChange }: Financ
       {/* Manual Input Section */}
       <div className={`space-y-6 ${dataSource === 'nessie' ? 'opacity-60' : ''}`}>
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-bold text-neon-purple uppercase tracking-wide">
+          <h3 className="text-lg font-bold text-neon-purple uppercase tracking-wide font-vcr">
             Manual Input
           </h3>
           {dataSource === 'nessie' && (
@@ -287,7 +287,7 @@ export default function FinancialInputForm({ initialData, onDataChange }: Financ
 
       {/* Expenses */}
       <div className="space-y-3">
-        <h3 className="text-sm text-neon-blue uppercase tracking-wide font-bold">
+        <h3 className="text-sm text-neon-blue uppercase tracking-wide font-bold font-vcr">
           Monthly Expenses
         </h3>
         

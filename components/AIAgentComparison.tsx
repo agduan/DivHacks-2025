@@ -12,7 +12,7 @@ export default function AIAgentComparison({ agents, evaluations, loading = false
   return (
     <div className="bg-retro-gray p-6 rounded-lg border-2 border-neon-purple/50">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-neon-purple uppercase tracking-wider">
+        <h2 className="text-2xl font-bold text-neon-purple uppercase tracking-wider font-vcr">
           AI Agent Comparison
         </h2>
         {loading && (
