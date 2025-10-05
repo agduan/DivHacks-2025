@@ -166,15 +166,38 @@ async function analyzeWithGeminiPersonality(
     // Try to extract JSON from the response
     let parsed;
     try {
-      // Sometimes Gemini wraps JSON in markdown code blocks
-      const jsonMatch = content.match(/```json\n?([\s\S]*?)\n?```/) || content.match(/\{[\s\S]*\}/);
-      const jsonText = jsonMatch ? (jsonMatch[1] || jsonMatch[0]) : content;
+      // Clean up the content first
+      let cleanContent = content.trim();
+      
+      // Remove markdown code blocks
+      if (cleanContent.includes('```json')) {
+        cleanContent = cleanContent.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+      }
+      if (cleanContent.includes('```')) {
+        cleanContent = cleanContent.replace(/```\n?/g, '').trim();
+      }
+      
+      // Try to find JSON object
+      const jsonMatch = cleanContent.match(/\{[\s\S]*\}/);
+      const jsonText = jsonMatch ? jsonMatch[0] : cleanContent;
+      
       parsed = JSON.parse(jsonText);
       
       // Validate the response has required fields
-      if (!parsed.insights || !parsed.confidence || !parsed.reasoning) {
+      if (!parsed.insights || !Array.isArray(parsed.insights) || !parsed.confidence || !parsed.reasoning) {
         throw new Error('Response missing required fields');
       }
+      
+      // Ensure insights is an array of strings
+      if (!parsed.insights.every((insight: any) => typeof insight === 'string')) {
+        throw new Error('Insights must be an array of strings');
+      }
+      
+      // Ensure confidence is a number between 0 and 1
+      if (typeof parsed.confidence !== 'number' || parsed.confidence < 0 || parsed.confidence > 1) {
+        parsed.confidence = 0.5; // Default confidence
+      }
+      
     } catch (parseError) {
       logger.warn(SERVICE_NAME, `Failed to parse JSON from ${personality}, using fallback`, {
         content: content.substring(0, 200),

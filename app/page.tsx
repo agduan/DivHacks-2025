@@ -11,6 +11,8 @@ import AIAgentComparison from '@/components/AIAgentComparison';
 import UserDashboard from '@/components/UserDashboard';
 import AuthModal from '@/components/AuthModal';
 import IntegrationPlaceholders from '@/components/IntegrationPlaceholders';
+import CalendarTimeline from '@/components/CalendarTimeline';
+import { FinancialModel } from '@/utils/financialModels';
 import { FinancialData, ScenarioChange, TimelinePrediction, AIAgentPrediction, OpikEvaluation } from '@/types/financial';
 import { MOCK_FINANCIAL_DATA } from '@/utils/mockData';
 import { calculateStatusQuo, calculateWhatIfScenario, determineAvatarState, generateInsights } from '@/utils/financialCalculations';
@@ -65,7 +67,7 @@ function MainApp() {
                 setAuthMode('signin');
                 setShowAuthModal(true);
               }}
-              className="w-full bg-neon-green text-black px-8 py-4 rounded font-bold text-lg uppercase tracking-wide transition-all"
+              className="w-full bg-neon-green text-black px-8 py-4 rounded font-bold text-lg uppercase tracking-wide transition-all hover:bg-neon-green/80"
             >
               Sign In
             </button>
@@ -75,7 +77,7 @@ function MainApp() {
                 setAuthMode('signup');
                 setShowAuthModal(true);
               }}
-              className="w-full bg-neon-blue text-white px-8 py-4 rounded font-bold text-lg uppercase tracking-wide transition-all"
+              className="w-full bg-neon-blue text-white px-8 py-4 rounded font-bold text-lg uppercase tracking-wide transition-all hover:bg-neon-blue/80"
             >
               Create Account
             </button>
@@ -122,6 +124,8 @@ function FinancialTimeMachineApp() {
   const [timelineMonths, setTimelineMonths] = useState<number>(12);
   const [loading, setLoading] = useState(false);
   const [dinoAnimation, setDinoAnimation] = useState<'walk' | 'run' | 'hurt'>('walk');
+  const [selectedModel, setSelectedModel] = useState<FinancialModel>('linear');
+  const [showCalendar, setShowCalendar] = useState(false);
 
   // Calculate timelines
   const statusQuoTimeline = calculateStatusQuo(financialData, timelineMonths);
@@ -263,7 +267,10 @@ function FinancialTimeMachineApp() {
     setLoading(true);
     setDinoAnimation('run');
     
-    // Run AI analysis (without changing timelineMonths)
+    // Advance timeline by 12 months (1 year)
+    setTimelineMonths(prev => prev + 12);
+    
+    // Run AI analysis with new timeline
     await loadAIPredictions();
     
     setLoading(false);
@@ -279,10 +286,16 @@ function FinancialTimeMachineApp() {
     }, 600); // Match the hurt animation duration
   };
 
-  // Handle scenario changes - keep dino walking
+  // Handle scenario changes - start running when changes are added
   const handleScenarioChanges = (changes: ScenarioChange[]) => {
     setScenarioChanges(changes);
-    // Dino stays walking - only runs when "Travel to Next Year" is pressed
+    if (changes.length > 0) {
+      console.log('🏃 Dino running - changes added:', changes.length);
+      setDinoAnimation('run');
+    } else {
+      console.log('🚶 Dino walking - no changes');
+      setDinoAnimation('walk');
+    }
   };
 
   // Determine which dino to show based on what-if scenario
@@ -343,23 +356,59 @@ function FinancialTimeMachineApp() {
           <ScenarioAdjuster onChangesUpdate={handleScenarioChanges} />
         </div>
 
-        {/* Time Travel Button */}
-        <div className="flex justify-center">
-          <button
-            onClick={handleTimeTravel}
-            disabled={loading}
-            className="bg-neon-blue text-white px-12 py-4 rounded-lg font-bold text-xl uppercase tracking-wider transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3"
-          >
-            {loading ? (
-              <>
-                Traveling...
-              </>
-            ) : (
-              <>
-                Travel to Next Year!
-              </>
-            )}
-          </button>
+        {/* Enhanced Time Travel Button */}
+        <div className="bg-retro-gray p-6 rounded-lg border-2 border-neon-green/50">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-neon-green uppercase tracking-wider font-vcr mb-4">
+              ⏰ Time Travel Controls
+            </h2>
+            
+            {/* Timeline Progress */}
+            <div className="mb-4">
+              <div className="flex justify-between text-sm text-gray-400 mb-2">
+                <span>Current Timeline</span>
+                <span>{timelineMonths} months</span>
+              </div>
+              <div className="w-full bg-retro-darker rounded-full h-3 overflow-hidden">
+                <div 
+                  className="h-full bg-gradient-to-r from-neon-blue to-neon-green transition-all duration-500"
+                  style={{ width: `${Math.min((timelineMonths / 120) * 100, 100)}%` }}
+                />
+              </div>
+              <p className="text-xs text-gray-500 mt-1">
+                {timelineMonths < 12 ? 'Short-term view' : 
+                 timelineMonths < 60 ? 'Medium-term projection' : 
+                 'Long-term forecast'}
+              </p>
+            </div>
+
+            <button
+              onClick={handleTimeTravel}
+              disabled={loading}
+              className={`relative px-8 py-4 rounded-lg font-bold text-lg uppercase tracking-wider transition-all transform ${
+                loading
+                  ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-neon-blue to-neon-green text-retro-dark hover:from-neon-green hover:to-neon-blue hover:scale-105 shadow-[0_0_20px_rgba(0,240,255,0.3)] hover:shadow-[0_0_30px_rgba(0,240,255,0.5)]'
+              } ${dinoAnimation === 'run' ? 'animate-pulse' : ''} ${dinoAnimation === 'hurt' ? 'animate-bounce' : ''}`}
+            >
+              {loading ? (
+                <span className="flex items-center gap-2">
+                  <div className="animate-spin w-4 h-4 border-2 border-current border-t-transparent rounded-full" />
+                  TRAVELING TO FUTURE...
+                </span>
+              ) : (
+                <span className="flex items-center gap-2">
+                  🚀 TRAVEL TO NEXT YEAR
+                </span>
+              )}
+            </button>
+
+            <div className="mt-4 text-center">
+              <p className="text-gray-400 text-sm">
+                Advance timeline by 12 months and get AI predictions
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Avatar Comparison */}
@@ -408,20 +457,65 @@ function FinancialTimeMachineApp() {
           </div>
         )}
 
-        {/* Timeline Chart */}
-        <TimelineChart
-          statusQuoData={statusQuoTimeline}
-          whatIfData={whatIfTimeline || undefined}
-          onTimeRangeChange={setTimelineMonths}
-        />
+        {/* Timeline Controls */}
+        <div className="bg-retro-gray p-4 rounded-lg border-2 border-neon-green/50 mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold text-neon-green uppercase tracking-wider font-vcr">
+              📊 Timeline Analysis
+            </h2>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setShowCalendar(!showCalendar)}
+                className={`px-4 py-2 rounded font-bold text-sm uppercase transition-all ${
+                  showCalendar
+                    ? 'bg-neon-blue text-retro-dark'
+                    : 'bg-retro-darker text-gray-400 hover:text-neon-blue'
+                }`}
+              >
+                {showCalendar ? '📊 Chart View' : '📅 Calendar View'}
+              </button>
+            </div>
+          </div>
+        </div>
 
-        {/* AI Agent Comparison - Always show, with placeholder before analysis */}
-        <AIAgentComparison 
-          agents={aiAgents} 
-          evaluations={evaluations}
-          comparison={opikComparison}
-          loading={aiLoading}
-        />
+        {/* Timeline Display */}
+        {showCalendar ? (
+          <CalendarTimeline
+            statusQuoData={statusQuoTimeline}
+            whatIfData={whatIfTimeline || undefined}
+            onModelChange={setSelectedModel}
+            selectedModel={selectedModel}
+          />
+        ) : (
+          <TimelineChart
+            statusQuoData={statusQuoTimeline}
+            whatIfData={whatIfTimeline || undefined}
+            onTimeRangeChange={setTimelineMonths}
+          />
+        )}
+
+        {/* AI Agent Comparison - Only show after user clicks "Travel to Next Year" */}
+        {aiAgents.length > 0 && (
+          <AIAgentComparison 
+            agents={aiAgents} 
+            evaluations={evaluations}
+            comparison={opikComparison}
+            loading={aiLoading}
+          />
+        )}
+        
+        {/* Prompt to run analysis */}
+        {aiAgents.length === 0 && !aiLoading && (
+          <div className="bg-retro-gray p-8 rounded-lg border-2 border-neon-purple/50 text-center">
+            <h3 className="text-2xl font-bold text-neon-purple mb-4 font-vcr">
+              AI Financial Advisors
+            </h3>
+            <p className="text-gray-300 mb-6">
+              Click "Travel to Next Year" to get personalized insights from three AI personalities!
+            </p>
+            
+          </div>
+        )}
 
   {/* Integration Placeholders removed as requested */}
       </div>
