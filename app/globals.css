@@ -5,7 +5,7 @@
 /* VCR OSD Mono Font */
 @font-face {
   font-family: 'VCR OSD Mono';
-  src: local('VCR OSD Mono'), local('VCR-OSD-Mono');
+  src: url('/fonts/VCR_OSD_MONO_1.001.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
