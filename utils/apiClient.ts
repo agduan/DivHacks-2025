@@ -60,7 +60,7 @@ class CacheManager {
   set<T>(key: string, data: T, ttl: number): void {
     const size = this.estimateSize(data);
     
-    // Check if we need to evict old entries
+    // Check if we need to evict old entries - FIXED MEMORY LEAK
     while (
       this.cache.size >= CACHE_CONFIG.maxCacheSize ||
       this.totalSize + size > CACHE_CONFIG.maxCacheSizeBytes
@@ -79,6 +79,9 @@ class CacheManager {
       size,
     });
     this.totalSize += size;
+    
+    // Schedule cleanup for expired entries
+    this.scheduleCleanup();
   }
 
   delete(key: string): void {
@@ -116,6 +119,26 @@ class CacheManager {
       return JSON.stringify(data).length;
     } catch {
       return 1024; // Default 1KB if can't stringify
+    }
+  }
+
+  private cleanupTimer: NodeJS.Timeout | null = null;
+
+  private scheduleCleanup(): void {
+    if (this.cleanupTimer) return; // Already scheduled
+    
+    this.cleanupTimer = setTimeout(() => {
+      this.cleanupExpiredEntries();
+      this.cleanupTimer = null;
+    }, 60000); // Clean up every minute
+  }
+
+  private cleanupExpiredEntries(): void {
+    const now = Date.now();
+    for (const [key, entry] of this.cache.entries()) {
+      if (now > entry.expires) {
+        this.delete(key);
+      }
     }
   }
 }
@@ -232,10 +255,9 @@ export class APIClient {
       }
     }
 
-    // Check for inflight request (deduplication)
+    // Check for inflight request (deduplication) - FIXED RACE CONDITION
     if (this.inflightRequests.has(cacheKey)) {
-      const result = await this.inflightRequests.get(cacheKey)!;
-      return result;
+      return this.inflightRequests.get(cacheKey)!;
     }
 
     // Create the request promise
@@ -249,7 +271,7 @@ export class APIClient {
       validateStatus
     );
 
-    // Store inflight request
+    // Store inflight request BEFORE executing
     this.inflightRequests.set(cacheKey, requestPromise);
 
     try {

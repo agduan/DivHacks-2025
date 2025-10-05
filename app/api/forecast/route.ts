@@ -11,14 +11,21 @@ export async function POST(request: NextRequest) {
       months?: number;
     };
 
+    // Input validation
     if (!financialData) {
       return NextResponse.json(
-        { error: 'Financial data is required' },
+        { 
+          error: 'Financial data is required',
+          code: 'MISSING_FINANCIAL_DATA',
+          success: false 
+        },
         { status: 400 }
       );
     }
 
-    const timelineMonths = months || 12;
+    // Validate months parameter
+    const timelineMonths = Math.min(Math.max(months || 12, 1), 120); // Clamp between 1-120 months
+
     const statusQuo = calculateStatusQuo(financialData, timelineMonths);
     const whatIf = scenarioChanges && scenarioChanges.length > 0
       ? calculateWhatIfScenario(financialData, scenarioChanges, timelineMonths)
@@ -28,11 +35,17 @@ export async function POST(request: NextRequest) {
       statusQuo,
       whatIf,
       success: true,
+      source: 'forecast',
     });
   } catch (error) {
     console.error('Forecast error:', error);
     return NextResponse.json(
-      { error: 'Failed to generate forecast' },
+      { 
+        error: 'Failed to generate forecast',
+        code: 'FORECAST_ERROR',
+        details: error instanceof Error ? error.message : 'Unknown error',
+        success: false 
+      },
       { status: 500 }
     );
   }

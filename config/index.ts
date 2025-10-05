@@ -28,10 +28,10 @@ function getEnvNumber(key: string, defaultValue: number): number {
 export const API_CONFIG = {
   // Nessie API (Capital One)
   nessie: {
-    baseUrl: 'https://api.nessieisreal.com', // Fixed to HTTPS
+    baseUrl: getEnvVar('NESSIE_BASE_URL', false) || 'https://api.nessieisreal.com',
     apiKey: getEnvVar('NESSIE_API_KEY', false),
-    timeout: 10000,
-    retries: 3,
+    timeout: getEnvNumber('NESSIE_TIMEOUT', 10000),
+    retries: getEnvNumber('NESSIE_RETRIES', 3),
   },
 
   // OpenAI API
@@ -78,30 +78,49 @@ export const FINANCIAL_PARAMS = {
   annualInflationRate: getEnvNumber('INFLATION_RATE', 0.025),
   savingsInterestRate: getEnvNumber('SAVINGS_INTEREST_RATE', 0.02),
   debtInterestRate: getEnvNumber('DEBT_INTEREST_RATE', 0.08),
-
+  investmentReturnRate: getEnvNumber('INVESTMENT_RETURN_RATE', 0.06),
+  
+  // Investment allocation
+  investmentAllocation: getEnvNumber('INVESTMENT_ALLOCATION', 0.5), // 50% of savings to investments
+  emergencyFundAllocation: getEnvNumber('EMERGENCY_FUND_ALLOCATION', 0.8), // 80% of savings to emergency fund until target
+  
   // Default values
-  defaultTimelineMonths: 12,
-  maxTimelineMonths: 120,
-  minMonthlyIncome: 0,
-  maxMonthlyIncome: 1000000,
+  defaultTimelineMonths: getEnvNumber('DEFAULT_TIMELINE_MONTHS', 12),
+  maxTimelineMonths: getEnvNumber('MAX_TIMELINE_MONTHS', 120),
+  minMonthlyIncome: getEnvNumber('MIN_MONTHLY_INCOME', 0),
+  maxMonthlyIncome: getEnvNumber('MAX_MONTHLY_INCOME', 1000000),
 
   // Calculation parameters
-  debtPaymentPercentage: 0.3, // 30% of net income goes to debt
-  emergencyFundMonths: 6,
+  debtPaymentPercentage: getEnvNumber('DEBT_PAYMENT_PERCENTAGE', 0.3), // 30% of net income goes to debt
+  emergencyFundMonths: getEnvNumber('EMERGENCY_FUND_MONTHS', 6),
+  
+  // Market data parameters
+  marketVolatility: getEnvNumber('MARKET_VOLATILITY', 0.15),
+  recessionThreshold: getEnvNumber('RECESSION_THRESHOLD', -0.05),
+  
+  // Promotion parameters
+  basePromotionInterval: getEnvNumber('BASE_PROMOTION_INTERVAL', 24), // months
+  promotionVariation: getEnvNumber('PROMOTION_VARIATION', 6), // months
+  baseSalaryIncrease: getEnvNumber('BASE_SALARY_INCREASE', 0.08), // 8%
 } as const;
 
 // ==================== CACHE CONFIGURATION ====================
 
 export const CACHE_CONFIG = {
-  // Cache TTL in milliseconds
-  nessieTransactions: 5 * 60 * 1000, // 5 minutes
-  nessieAccounts: 10 * 60 * 1000, // 10 minutes
-  aiPredictions: 15 * 60 * 1000, // 15 minutes
-  opikEvaluations: 30 * 60 * 1000, // 30 minutes
+  // Cache TTL in milliseconds (configurable via environment)
+  nessieTransactions: getEnvNumber('CACHE_NESSIE_TRANSACTIONS_TTL', 5 * 60 * 1000), // 5 minutes
+  nessieAccounts: getEnvNumber('CACHE_NESSIE_ACCOUNTS_TTL', 10 * 60 * 1000), // 10 minutes
+  aiPredictions: getEnvNumber('CACHE_AI_PREDICTIONS_TTL', 15 * 60 * 1000), // 15 minutes
+  opikEvaluations: getEnvNumber('CACHE_OPIK_EVALUATIONS_TTL', 30 * 60 * 1000), // 30 minutes
+  marketData: getEnvNumber('CACHE_MARKET_DATA_TTL', 60 * 60 * 1000), // 1 hour
 
-  // Cache size limits
-  maxCacheSize: 100,
-  maxCacheSizeBytes: 10 * 1024 * 1024, // 10MB
+  // Cache size limits (configurable)
+  maxCacheSize: getEnvNumber('CACHE_MAX_ENTRIES', 100),
+  maxCacheSizeBytes: getEnvNumber('CACHE_MAX_SIZE_BYTES', 10 * 1024 * 1024), // 10MB
+  
+  // Cache invalidation settings
+  enableCacheWarming: getEnvVar('ENABLE_CACHE_WARMING', false) === 'true',
+  cacheWarmingInterval: getEnvNumber('CACHE_WARMING_INTERVAL', 5 * 60 * 1000), // 5 minutes
 } as const;
 
 // ==================== CIRCUIT BREAKER CONFIGURATION ====================

@@ -57,12 +57,14 @@ class MonitoringService {
       this.metrics.shift();
     }
 
-    // Log to console in development
+    // Log to console in development (sanitized)
     if (process.env.NODE_ENV === 'development') {
       const emoji = metric.success ? '✅' : '❌';
       const cacheEmoji = metric.cached ? '💾' : '🌐';
+      // Sanitize sensitive data from logs
+      const sanitizedEndpoint = metric.endpoint.replace(/key=[^&]+/g, 'key=***');
       console.log(
-        `${emoji} ${cacheEmoji} [${metric.service}] ${metric.method} ${metric.endpoint} - ${metric.status} - ${metric.duration}ms`
+        `${emoji} ${cacheEmoji} [${metric.service}] ${metric.method} ${sanitizedEndpoint} - ${metric.status} - ${metric.duration}ms`
       );
     }
 
@@ -183,6 +185,31 @@ export const monitoring = new MonitoringService();
 // ==================== HELPER FUNCTIONS ====================
 
 /**
+ * Sanitize sensitive data from logs
+ */
+function sanitizeLogData(data: any): any {
+  if (typeof data !== 'object' || data === null) {
+    return data;
+  }
+
+  const sanitized = Array.isArray(data) ? [] : {};
+  const sensitiveKeys = ['apiKey', 'password', 'token', 'secret', 'key', 'auth'];
+  
+  for (const [key, value] of Object.entries(data)) {
+    const lowerKey = key.toLowerCase();
+    if (sensitiveKeys.some(sensitive => lowerKey.includes(sensitive))) {
+      (sanitized as any)[key] = '***';
+    } else if (typeof value === 'object' && value !== null) {
+      (sanitized as any)[key] = sanitizeLogData(value);
+    } else {
+      (sanitized as any)[key] = value;
+    }
+  }
+  
+  return sanitized;
+}
+
+/**
  * Measure execution time of an async function
  */
 export async function measureTime<T>(
@@ -222,17 +249,20 @@ export const logger = {
   },
 
   error: (service: string, message: string, error?: Error, context?: any) => {
+    // Sanitize sensitive data from error logs
+    const sanitizedContext = context ? sanitizeLogData(context) : undefined;
+    
     console.error(`❌ [${service}] ${message}`, {
       error: error?.message,
       stack: error?.stack,
-      ...context,
+      ...sanitizedContext,
     });
 
     monitoring.trackError({
       service,
       error: message,
       stack: error?.stack,
-      context,
+      context: sanitizedContext,
     });
   },
 
