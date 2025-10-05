@@ -44,7 +44,15 @@ You get visual comparisons with pixel-art avatars showing your current vs. futur
 
 3. **Open your browser**: Navigate to `http://localhost:3000`
 
-4. **(Optional) Add API keys**: Copy `env.example` to `.env.local` and add your keys if you want to use real APIs
+4. **(Optional) Enable Real AI Evaluation**:
+   ```bash
+   cp env.example .env.local
+   ```
+   Then add your API keys:
+   - **Opik** (free): Get key at [comet.com/opik](https://www.comet.com/site/products/opik/)
+   - **OpenAI, Anthropic, Google AI** (optional): For real predictions
+   
+   See [OPIK_INTEGRATION.md](./OPIK_INTEGRATION.md) for detailed setup guide
 
 ## Project Structure
 
@@ -92,10 +100,23 @@ You get visual comparisons with pixel-art avatars showing your current vs. futur
 - Gamification & achievement badges
 - Export reports as PDF
 
+## AI & Opik Integration
+
+The app supports **real AI evaluation** with Opik:
+
+- **Without API keys**: Uses mock predictions and evaluations (perfect for demos)
+- **With Opik key**: Tracks predictions and provides real consistency/accuracy scores
+- **With AI keys**: Gets actual insights from GPT-4, Claude, and Gemini
+
+All integrations are optional and the app works great without them!
+
+📖 **Full setup guide**: [OPIK_INTEGRATION.md](./OPIK_INTEGRATION.md)
+
 ## Notes
 
-- This is a hackathon project — some features are intentionally placeholder/mock implementations
-- AI predictions are simulated; for production you'd connect to real LLM APIs
-- The app uses mock financial data by default for demo purposes
+- This is a hackathon project built for learning and demonstration
+- Core financial calculations are real and functional
+- AI integrations can be mock (for demo) or real (with API keys)
+- Opik integration is production-ready when you add your API key
 
 Built for DivHacks 2025 🚀

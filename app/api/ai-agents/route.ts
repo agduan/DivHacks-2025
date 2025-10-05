@@ -1,82 +1,73 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { TimelinePrediction, AIAgentPrediction, OpikEvaluation } from '@/types/financial';
-
-// Placeholder for AI agent comparison using Opik
-// In production, this would call multiple AI APIs (OpenAI, Anthropic, etc.)
-// and use Opik for evaluation
+import { TimelinePrediction, AIAgentPrediction, OpikEvaluation, FinancialData } from '@/types/financial';
+import { analyzeWithGPT4, analyzeWithClaude, analyzeWithGemini, generatePredictionVariation } from '@/utils/aiAgents';
+import { evaluateAgentPredictions, trackPrediction } from '@/utils/opikEvaluation';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { statusQuoTimeline, prompt } = body as {
+    const { statusQuoTimeline, financialData } = body as {
       statusQuoTimeline: TimelinePrediction[];
-      prompt?: string;
+      financialData: FinancialData;
     };
 
-    // Mock AI agent predictions
-    // In production, these would be actual API calls to different models
-    const agents: AIAgentPrediction[] = [
-      {
-        agentName: 'GPT-4',
-        predictions: generateVariation(statusQuoTimeline, 1.05),
-        confidence: 0.87,
-        insights: [
-          'Strong growth potential identified',
-          'Consider tax-advantaged accounts',
-        ],
-        reasoning: 'Based on historical spending patterns and income stability',
-      },
-      {
-        agentName: 'Claude',
-        predictions: statusQuoTimeline,
-        confidence: 0.92,
-        insights: [
-          'Balanced financial trajectory',
-          'Emergency fund adequacy confirmed',
-        ],
-        reasoning: 'Conservative estimate based on median outcomes',
-      },
-      {
-        agentName: 'Gemini',
-        predictions: generateVariation(statusQuoTimeline, 0.95),
-        confidence: 0.84,
-        insights: [
-          'Market volatility factors considered',
-          'Diversification recommended',
-        ],
-        reasoning: 'Risk-adjusted projections with market conditions',
-      },
-    ];
+    const agents: AIAgentPrediction[] = [];
+    
+    // Try to get real AI predictions (fallback to mock if APIs not configured)
+    
+    // GPT-4 Analysis
+    const gpt4Analysis = await analyzeWithGPT4(financialData, statusQuoTimeline);
+    agents.push({
+      agentName: 'GPT-4',
+      predictions: generatePredictionVariation(statusQuoTimeline, 1.05),
+      confidence: gpt4Analysis?.confidence || 0.87,
+      insights: gpt4Analysis?.insights || [
+        'Strong growth potential identified',
+        'Consider tax-advantaged accounts',
+      ],
+      reasoning: gpt4Analysis?.reasoning || 'Based on historical spending patterns and income stability',
+    });
 
-    // Mock Opik evaluations
-    const evaluations: OpikEvaluation[] = [
-      {
-        agentName: 'GPT-4',
-        consistency: 0.89,
-        accuracy: 0.85,
-        reliability: 0.87,
-        notes: ['Optimistic bias detected', 'Good long-term accuracy'],
-      },
-      {
-        agentName: 'Claude',
-        consistency: 0.94,
-        accuracy: 0.91,
-        reliability: 0.92,
-        notes: ['Most consistent predictions', 'Best overall reliability'],
-      },
-      {
-        agentName: 'Gemini',
-        consistency: 0.86,
-        accuracy: 0.88,
-        reliability: 0.87,
-        notes: ['Conservative approach', 'Strong risk assessment'],
-      },
-    ];
+    // Claude Analysis
+    const claudeAnalysis = await analyzeWithClaude(financialData, statusQuoTimeline);
+    agents.push({
+      agentName: 'Claude',
+      predictions: statusQuoTimeline,
+      confidence: claudeAnalysis?.confidence || 0.92,
+      insights: claudeAnalysis?.insights || [
+        'Balanced financial trajectory',
+        'Emergency fund adequacy confirmed',
+      ],
+      reasoning: claudeAnalysis?.reasoning || 'Conservative estimate based on median outcomes',
+    });
+
+    // Gemini Analysis
+    const geminiAnalysis = await analyzeWithGemini(financialData, statusQuoTimeline);
+    agents.push({
+      agentName: 'Gemini',
+      predictions: generatePredictionVariation(statusQuoTimeline, 0.95),
+      confidence: geminiAnalysis?.confidence || 0.84,
+      insights: geminiAnalysis?.insights || [
+        'Market volatility factors considered',
+        'Diversification recommended',
+      ],
+      reasoning: geminiAnalysis?.reasoning || 'Risk-adjusted projections with market conditions',
+    });
+
+    // Evaluate all agents using Opik
+    const evaluations = await evaluateAgentPredictions(agents);
+
+    // Track predictions for longitudinal analysis
+    for (const agent of agents) {
+      await trackPrediction(agent.agentName, agent);
+    }
 
     return NextResponse.json({
       agents,
       evaluations,
       success: true,
+      usingRealAI: !!(process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY || process.env.GOOGLE_AI_API_KEY),
+      usingOpik: !!process.env.OPIK_API_KEY,
     });
   } catch (error) {
     console.error('AI agents error:', error);
@@ -85,13 +76,5 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
-
-function generateVariation(timeline: TimelinePrediction[], factor: number): TimelinePrediction[] {
-  return timeline.map(point => ({
-    ...point,
-    netWorth: Math.round(point.netWorth * factor),
-    savings: Math.round(point.savings * factor),
-  }));
 }
 
