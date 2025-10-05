@@ -259,7 +259,7 @@ export const REAL_SP500_DATA: SP500DataPoint[] = [
  * Calculate monthly returns from real S&P 500 data
  */
 export function calculateSP500Returns(): { month: number; return: number; volatility: number; recession: boolean }[] {
-  const returns = [];
+  const returns: { month: number; return: number; volatility: number; recession: boolean }[] = [];
   
   for (let i = 1; i < REAL_SP500_DATA.length; i++) {
     const current = REAL_SP500_DATA[i];
@@ -292,7 +292,7 @@ export function calculateSP500Returns(): { month: number; return: number; volati
  * Calculate NASDAQ returns from real data
  */
 export function calculateNASDAQReturns(): { month: number; return: number; volatility: number; recession: boolean }[] {
-  const returns = [];
+  const returns: { month: number; return: number; volatility: number; recession: boolean }[] = [];
   
   for (let i = 1; i < REAL_NASDAQ_DATA.length; i++) {
     const current = REAL_NASDAQ_DATA[i];
