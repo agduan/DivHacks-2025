@@ -19,6 +19,7 @@ function MainApp() {
   const { user, loading } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
+  const [isButtonHovered, setIsButtonHovered] = useState(false);
 
   // Check URL parameters for auth mode
   useEffect(() => {
@@ -45,6 +46,12 @@ function MainApp() {
     return (
       <div className="min-h-screen bg-retro-darker flex items-center justify-center">
         <div className="text-center max-w-2xl mx-auto px-6">
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <DinoSprite 
+              variant="doux" 
+              animation={isButtonHovered ? 'run' : 'walk'} 
+            />
+          </div>
           <h1 className="text-6xl font-bold text-neon-purple uppercase tracking-wider mb-6">
             Financial Time Machine
           </h1>
@@ -58,6 +65,8 @@ function MainApp() {
                 setAuthMode('signin');
                 setShowAuthModal(true);
               }}
+              onMouseEnter={() => setIsButtonHovered(true)}
+              onMouseLeave={() => setIsButtonHovered(false)}
               className="w-full bg-neon-green text-black px-8 py-4 rounded font-bold text-lg uppercase tracking-wide transition-all hover:bg-neon-green/80"
             >
               Sign In
@@ -68,6 +77,8 @@ function MainApp() {
                 setAuthMode('signup');
                 setShowAuthModal(true);
               }}
+              onMouseEnter={() => setIsButtonHovered(true)}
+              onMouseLeave={() => setIsButtonHovered(false)}
               className="w-full bg-neon-blue text-white px-8 py-4 rounded font-bold text-lg uppercase tracking-wide transition-all hover:bg-neon-blue/80"
             >
               Create Account

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import DinoSprite from '@/components/DinoSprite';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -15,6 +16,7 @@ export default function AuthModal({ isOpen, onClose, mode }: AuthModalProps) {
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isButtonHovered, setIsButtonHovered] = useState(false);
   
   const { signIn, signUp } = useAuth();
 
@@ -58,9 +60,20 @@ export default function AuthModal({ isOpen, onClose, mode }: AuthModalProps) {
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-retro-gray p-6 rounded-lg border-2 border-neon-purple/50 w-full max-w-md">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-neon-purple uppercase tracking-wider">
-            {mode === 'signin' ? 'Sign In' : 'Sign Up'}
-          </h2>
+          <div>
+            <div className="flex items-center gap-3 mb-2">
+              <DinoSprite 
+                variant="doux" 
+                animation={isButtonHovered ? 'run' : 'walk'} 
+              />
+              <span className="text-xs text-gray-400 italic">
+                {isButtonHovered ? 'Running to your future!' : 'Ready when you are...'}
+              </span>
+            </div>
+            <h2 className="text-2xl font-bold text-neon-purple uppercase tracking-wider">
+              {mode === 'signin' ? 'Sign In' : 'Sign Up'}
+            </h2>
+          </div>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-white text-2xl"
@@ -123,6 +136,8 @@ export default function AuthModal({ isOpen, onClose, mode }: AuthModalProps) {
           <button
             type="submit"
             disabled={loading}
+            onMouseEnter={() => setIsButtonHovered(true)}
+            onMouseLeave={() => setIsButtonHovered(false)}
             className="w-full bg-neon-green text-black px-4 py-2 rounded font-bold text-sm uppercase tracking-wide transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? 'Processing...' : (mode === 'signin' ? 'Sign In' : 'Sign Up')}
