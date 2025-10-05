@@ -112,6 +112,10 @@ input:focus {
 /* Dino Sprite Animations */
 .dino-sprite {
   background-repeat: no-repeat;
+  display: block;
+  image-rendering: pixelated;
+  background-size: 2304px 96px; /* 576px sprite * 4 scale = 2304px width, 24px * 4 = 96px height */
+  background-position: 0 0;
 }
 
 .dino-sprite-doux {
@@ -130,53 +134,46 @@ input:focus {
   background-image: url('/dinos/DinoSprites - tard.png');
 }
 
-/* Idle animation - Row 0 (Idle), 4 frames */
+/* Walk animation - frames 1-4 (4 frames) */
 .dino-anim-walk {
-  animation: dino-walk 0.8s steps(4) infinite;
-  background-position-y: 0px;
-  background-size: auto;
+  animation: dino-walk 0.6s steps(4) infinite;
 }
 
 @keyframes dino-walk {
   from {
-    background-position-x: 0px;
+    background-position: 0 0;
   }
   to {
-    background-position-x: -96px; /* 24px * 4 frames */
+    background-position: -384px 0; /* 96px per frame * 4 frames */
   }
 }
 
-/* Run animation - trying different position, 6 frames */
+/* Run animation - frames 19-24 (6 frames) */
 .dino-anim-run {
-  animation: dino-run 0.3s steps(6) infinite;
-  background-position-y: -24px; /* Row 1 */
-  background-size: auto;
-  transform: scaleX(-1); /* Flip to make it look different */
+  animation: dino-run 0.7s steps(6) infinite;
 }
 
 @keyframes dino-run {
   from {
-    background-position-x: 0px;
+    background-position: -1728px 0; /* Start at frame 19 (index 18) */
   }
   to {
-    background-position-x: -144px; /* 24px * 6 frames */
+    background-position: -2304px 0; /* End at frame 24 */
   }
 }
 
-/* Hurt animation - trying row 2, assuming 3 frames */
+/* Hurt animation - frames 15-17 (3 frames) */
 .dino-anim-hurt {
-  animation: dino-hurt 0.6s steps(3) 1;
+  animation: dino-hurt 0.4s steps(3) 1;
   animation-fill-mode: forwards;
-  background-position-y: -48px; /* Row 2 */
-  background-size: auto;
 }
 
 @keyframes dino-hurt {
   from {
-    background-position-x: 0px;
+    background-position: -1344px 0; /* Start at frame 15 (index 14) */
   }
   to {
-    background-position-x: -72px; /* 24px * 3 frames */
+    background-position: -1632px 0; /* End at frame 17 */
   }
 }
 

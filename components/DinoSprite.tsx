@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect } from 'react';
+
 interface DinoSpriteProps {
   variant: 'doux' | 'mort' | 'vita' | 'tard';
   animation: 'walk' | 'run' | 'hurt';
@@ -7,6 +9,11 @@ interface DinoSpriteProps {
 }
 
 export default function DinoSprite({ variant, animation, className = '' }: DinoSpriteProps) {
+  // Debug logging
+  useEffect(() => {
+    console.log(`🦕 Dino animation changed to: ${animation}`);
+  }, [animation]);
+
   // Map variant names to file names
   const spriteMap = {
     doux: 'doux',
@@ -21,11 +28,11 @@ export default function DinoSprite({ variant, animation, className = '' }: DinoS
     <div 
       className={`dino-sprite dino-sprite-${spriteName} dino-anim-${animation} ${className}`}
       style={{
-        width: '24px',
-        height: '24px',
+        width: '96px',
+        height: '96px',
         imageRendering: 'pixelated',
-        transform: 'scale(2.5)',
       }}
+      title={`Dino: ${animation}`}
     />
   );
 }

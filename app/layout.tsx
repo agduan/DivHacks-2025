@@ -4,6 +4,9 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Financial Time Machine",
   description: "See your financial future with AI-powered forecasting",
+  icons: {
+    icon: '/favicon.png',
+  },
 };
 
 export default function RootLayout({

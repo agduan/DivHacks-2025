@@ -11,22 +11,22 @@ interface AvatarProps {
 const avatarStyles = {
   struggling: {
     color: '#cc6666',
-    emoji: '😰',
+    image: '/avatar/poor.png',
     glow: 'shadow-[0_0_15px_rgba(204,102,102,0.3)]',
   },
   stable: {
     color: '#ccaa66',
-    emoji: '😊',
+    image: '/avatar/normal.png',
     glow: 'shadow-[0_0_15px_rgba(204,170,102,0.3)]',
   },
   thriving: {
     color: '#66cc88',
-    emoji: '😎',
+    image: '/avatar/normal.png',
     glow: 'shadow-[0_0_15px_rgba(102,204,136,0.3)]',
   },
   wealthy: {
     color: '#4a9eff',
-    emoji: '🤑',
+    image: '/avatar/rich.png',
     glow: 'shadow-[0_0_15px_rgba(74,158,255,0.3)]',
   },
 };
@@ -39,13 +39,18 @@ export default function Avatar({ state, label, netWorth, savings, debt }: Avatar
       {/* Avatar Display */}
       <div className={`relative ${style.glow} animate-float`}>
         <div
-          className="w-32 h-32 rounded-lg flex items-center justify-center text-6xl"
+          className="w-48 h-48 rounded-lg flex items-center justify-center overflow-hidden"
           style={{
             backgroundColor: `${style.color}22`,
             border: `3px solid ${style.color}`,
           }}
         >
-          {style.emoji}
+          <img 
+            src={style.image} 
+            alt={`${state} avatar`}
+            className="w-full h-full object-cover"
+            style={{ imageRendering: 'pixelated' }}
+          />
         </div>
         
         {/* Pixel corners */}

@@ -136,11 +136,11 @@ export default function FinancialInputForm({ initialData, onDataChange }: Financ
 
   return (
     <div className="bg-retro-gray p-6 rounded-lg border-2 border-neon-purple/50 space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-neon-purple uppercase tracking-wider font-vcr">
+      <div className="flex items-center justify-between flex-wrap gap-4">
+        <h2 className="text-2xl font-bold text-neon-purple uppercase tracking-wider font-vcr m-0">
           Financial Input
         </h2>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-shrink-0">
           <span className="text-sm text-neon-blue">Data Source:</span>
           <span className={`text-sm font-bold ${dataSource === 'nessie' ? 'text-neon-green' : 'text-neon-purple'}`}>
             {dataSource === 'nessie' ? 'Nessie API' : 'Manual'}
