@@ -275,7 +275,7 @@ export function calculateSP500Returns(): { month: number; return: number; volati
     const volatility = Math.sqrt(variance);
     
     // Determine if in recession (negative returns for multiple months)
-    const recession = monthlyReturn < -0.05 && returns.slice(-2).every(r => r.return < 0);
+    const recession: boolean = monthlyReturn < -0.05 && returns.slice(-2).every(r => r.return < 0);
     
     returns.push({
       month: i,
@@ -308,7 +308,7 @@ export function calculateNASDAQReturns(): { month: number; return: number; volat
     const volatility = Math.sqrt(variance);
     
     // Determine if in recession (negative returns for multiple months)
-    const recession = monthlyReturn < -0.05 && returns.slice(-2).every(r => r.return < 0);
+    const recession: boolean = monthlyReturn < -0.05 && returns.slice(-2).every(r => r.return < 0);
     
     returns.push({
       month: i,
