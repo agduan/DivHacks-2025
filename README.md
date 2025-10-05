@@ -19,7 +19,7 @@ You get visual comparisons with pixel-art avatars showing your current vs. futur
 - **Avatar States**: Watch your financial avatar evolve from struggling → stable → thriving → wealthy
 - **AI Comparison Panel**: See how different AI models predict your future and which one is most reliable (using Opik evaluation)
 - **What-If Explorer**: Adjust spending in different categories and see instant results
-- **Future-Ready**: Placeholders for XRPL savings integration and premium features
+- **Future-Ready**: Placeholders for Echo savings integration and premium features
 
 ## Tech Stack
 
@@ -66,7 +66,7 @@ You get visual comparisons with pixel-art avatars showing your current vs. futur
 │   ├── Avatar.tsx              # Financial state avatar
 │   ├── AIAgentComparison.tsx   # Multi-AI comparison
 │   ├── FinancialInputForm.tsx  # Income/expense inputs
-│   ├── IntegrationPlaceholders.tsx  # XRPL & Echo widgets
+│   ├── IntegrationPlaceholders.tsx  # Echo widget
 │   ├── ScenarioAdjuster.tsx    # What-if scenario builder
 │   └── TimelineChart.tsx       # Financial timeline graph
 ├── types/
@@ -93,7 +93,7 @@ You get visual comparisons with pixel-art avatars showing your current vs. futur
 
 ## Future Enhancements
 
-- XRPL integration for crypto savings tracking
+  
 - Echo monetization for premium features
 - Multi-year forecasts (3, 5, 10 years out)
 - Social sharing of anonymized financial journeys

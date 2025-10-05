@@ -445,8 +445,7 @@ function FinancialTimeMachineApp() {
           </div>
         )}
 
-        {/* Integration Placeholders */}
-        <IntegrationPlaceholders />
+  {/* Integration Placeholders removed as requested */}
       </div>
 
       {/* Footer */}
