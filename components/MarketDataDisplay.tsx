@@ -86,7 +86,7 @@ export default function MarketDataDisplay({ selectedModel }: MarketDataDisplayPr
     <div className="bg-retro-gray p-6 rounded-lg border-2 border-neon-green/50 mb-6">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-bold text-neon-green uppercase tracking-wider font-vcr">
-          📊 Real Market Data
+          Real Market Data
         </h2>
         <div className="text-sm text-gray-400 space-y-1">
           <div>S&P 500: ${currentSP500.close.toLocaleString()}</div>
@@ -99,7 +99,6 @@ export default function MarketDataDisplay({ selectedModel }: MarketDataDisplayPr
         <div className="bg-retro-darker p-4 rounded-lg border border-neon-blue/30">
           <h3 className="text-neon-blue font-bold mb-2">Market Trend</h3>
           <div className="flex items-center gap-2 mb-2">
-            <span className="text-2xl">{getTrendIcon(marketTrend.trend)}</span>
             <span className={`font-bold text-lg ${getTrendColor(marketTrend.trend)}`}>
               {marketTrend.trend.toUpperCase()}
             </span>

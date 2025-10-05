@@ -86,7 +86,7 @@ export default function LongTermProjection({ statusQuoData, whatIfData, selected
     <div className="bg-retro-gray p-6 rounded-lg border-2 border-neon-green/50 mb-6">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-bold text-neon-green uppercase tracking-wider font-vcr">
-          {getModelIcon(selectedModel)} {years.toFixed(1)}-Year {selectedModel.charAt(0).toUpperCase() + selectedModel.slice(1)} Projection
+          {years.toFixed(1)}-Year {selectedModel.charAt(0).toUpperCase() + selectedModel.slice(1)} Projection
         </h2>
         <button
           onClick={() => setShowDetails(!showDetails)}

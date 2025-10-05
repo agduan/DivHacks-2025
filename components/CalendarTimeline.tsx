@@ -60,7 +60,7 @@ export default function CalendarTimeline({
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-2xl font-bold text-neon-green uppercase tracking-wider font-vcr">
-            📅 Calendar Timeline
+            Calendar Timeline
           </h2>
           <p className="text-gray-400 text-sm mt-1">
             Click months to explore your financial journey
@@ -77,7 +77,7 @@ export default function CalendarTimeline({
                 : 'text-gray-400 hover:text-neon-blue'
             }`}
           >
-            📅 Calendar
+            Calendar
           </button>
           <button
             onClick={() => setViewMode('chart')}
@@ -87,7 +87,7 @@ export default function CalendarTimeline({
                 : 'text-gray-400 hover:text-neon-blue'
             }`}
           >
-            📊 Chart
+            Chart
           </button>
         </div>
       </div>
