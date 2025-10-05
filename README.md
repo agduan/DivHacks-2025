@@ -1,4 +1,4 @@
-# Financial Time Machine ⏰
+# finosaur.ai 🦕
 
 A playful sci-fi web app that uses AI to show you what your financial future could look like based on your current spending habits — or how things might change if you adjust them.
 

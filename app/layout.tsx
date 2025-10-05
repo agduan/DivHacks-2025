@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Financial Time Machine",
+  title: "finosaur.ai",
   description: "See your financial future with AI-powered forecasting",
   icons: {
     icon: '/favicon.png',

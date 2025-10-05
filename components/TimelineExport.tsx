@@ -21,7 +21,7 @@ export default function TimelineExport({ statusQuoData, whatIfData, financialDat
         <!DOCTYPE html>
         <html>
         <head>
-          <title>Financial Time Machine Report</title>
+          <title>finosaur.ai Report</title>
           <style>
             body { font-family: Arial, sans-serif; margin: 20px; }
             .header { background: #0a0e27; color: #4a9eff; padding: 20px; border-radius: 8px; }
@@ -33,7 +33,7 @@ export default function TimelineExport({ statusQuoData, whatIfData, financialDat
         </head>
         <body>
           <div class="header">
-            <h1>🚀 Financial Time Machine Report</h1>
+            <h1>🦕 finosaur.ai Report</h1>
             <p>Generated on ${new Date().toLocaleDateString()}</p>
           </div>
           

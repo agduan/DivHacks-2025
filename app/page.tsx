@@ -42,7 +42,7 @@ function MainApp() {
       <div className="min-h-screen bg-retro-darker flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin text-neon-blue text-4xl mb-4">⏳</div>
-          <p className="text-neon-blue text-lg">Loading Financial Time Machine...</p>
+          <p className="text-neon-blue text-lg">Loading finosaur.ai...</p>
         </div>
       </div>
     );
@@ -59,7 +59,7 @@ function MainApp() {
             />
           </div>
           <h1 className="text-6xl font-bold text-neon-purple uppercase tracking-wider mb-6 font-vcr">
-            Financial Time Machine
+            finosaur.ai
           </h1>
           <p className="text-xl text-gray-300 mb-8">
             Predict your financial future with AI-powered insights. Sign in to access personalized predictions and real financial data.
@@ -353,7 +353,7 @@ function FinancialTimeMachineApp() {
               <DinoSprite variant={getDinoVariant()} animation={dinoAnimation} className="ml-2" />
               <div className="ml-2">
                 <h1 className="text-3xl font-bold text-neon-blue uppercase tracking-wider neon-glow font-vcr">
-                  Financial Time Machine
+                  finosaur.ai
                 </h1>
                 <p className="text-sm text-neon-blue mt-1">
                   See your financial future before it happens

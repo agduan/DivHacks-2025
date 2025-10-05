@@ -362,7 +362,7 @@ export default function NessieSetupPage() {
                       href="/"
                       className="inline-block mt-4 bg-neon-green hover:bg-neon-green/80 text-black font-bold py-2 px-6 rounded transition-colors"
                     >
-                      🚀 Go to Financial Time Machine
+                      🚀 Go to finosaur.ai
                     </a>
                   </div>
                 </div>
