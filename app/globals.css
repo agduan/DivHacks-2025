@@ -118,6 +118,7 @@ input:focus {
 .dino-anim-walk {
   animation: dino-walk 0.8s steps(4) infinite;
   background-position-y: 0px;
+  background-size: auto;
 }
 
 @keyframes dino-walk {
@@ -129,10 +130,12 @@ input:focus {
   }
 }
 
-/* Run animation - Row 1 (Walk), 6 frames */
+/* Run animation - trying different position, 6 frames */
 .dino-anim-run {
   animation: dino-run 0.3s steps(6) infinite;
-  background-position-y: -24px; /* Second row */
+  background-position-y: -24px; /* Row 1 */
+  background-size: auto;
+  transform: scaleX(-1); /* Flip to make it look different */
 }
 
 @keyframes dino-run {
@@ -144,11 +147,12 @@ input:focus {
   }
 }
 
-/* Hurt animation - Row 4 (Hit), 3 frames, plays once */
+/* Hurt animation - trying row 2, assuming 3 frames */
 .dino-anim-hurt {
   animation: dino-hurt 0.6s steps(3) 1;
   animation-fill-mode: forwards;
-  background-position-y: -96px; /* Fifth row (0, 24, 48, 72, 96) */
+  background-position-y: -48px; /* Row 2 */
+  background-size: auto;
 }
 
 @keyframes dino-hurt {
