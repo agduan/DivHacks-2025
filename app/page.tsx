@@ -494,28 +494,13 @@ function FinancialTimeMachineApp() {
           />
         )}
 
-        {/* AI Agent Comparison - Only show after user clicks "Travel to Next Year" */}
-        {aiAgents.length > 0 && (
-          <AIAgentComparison 
-            agents={aiAgents} 
-            evaluations={evaluations}
-            comparison={opikComparison}
-            loading={aiLoading}
-          />
-        )}
-        
-        {/* Prompt to run analysis */}
-        {aiAgents.length === 0 && !aiLoading && (
-          <div className="bg-retro-gray p-8 rounded-lg border-2 border-neon-purple/50 text-center">
-            <h3 className="text-2xl font-bold text-neon-purple mb-4 font-vcr">
-              AI Financial Advisors
-            </h3>
-            <p className="text-gray-300 mb-6">
-              Click "Travel to Next Year" to get personalized insights from three AI personalities!
-            </p>
-            
-          </div>
-        )}
+        {/* AI Agent Comparison - Always show, with placeholder before analysis */}
+        <AIAgentComparison 
+          agents={aiAgents} 
+          evaluations={evaluations}
+          comparison={opikComparison}
+          loading={aiLoading}
+        />
 
   {/* Integration Placeholders removed as requested */}
       </div>
