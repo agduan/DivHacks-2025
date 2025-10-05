@@ -1,5 +1,6 @@
 import { FinancialData, TimelinePrediction } from '@/types/financial';
 import { getCombinedMarketData, getMarketTrend, getSectorPerformance, REAL_SP500_DATA, REAL_NASDAQ_DATA } from '@/utils/realMarketData';
+import { FINANCIAL_PARAMS } from '@/config';
 
 export type FinancialModel = 'linear' | 'exponential' | 'seasonal' | 'realistic' | 'conservative' | 'savings' | 'optimistic';
 
@@ -71,46 +72,136 @@ interface MarketData {
   recession: boolean;
 }
 
-// Generate promotion events based on model type
+// Generate promotion events based on model type - REALISTIC CAREER PROGRESSION
 function generatePromotionEvents(months: number, model: FinancialModel): PromotionEvent[] {
   const events: PromotionEvent[] = [];
   
-  // Base promotion schedule (every 24 months on average)
-  const basePromotionInterval = 24;
-  const promotionVariation = 6; // ±6 months variation
+  // Use configurable promotion parameters
+  const basePromotionInterval = FINANCIAL_PARAMS.basePromotionInterval;
+  const promotionVariation = FINANCIAL_PARAMS.promotionVariation;
   
-  for (let month = basePromotionInterval; month <= months; month += basePromotionInterval + Math.floor(Math.random() * promotionVariation * 2 - promotionVariation)) {
-    let salaryIncrease = 0.08; // 8% base salary increase
+  // REALISTIC: Stop major promotions after 15 years (180 months)
+  const careerPlateauMonth = 180;
+  const maxPromotionMonth = Math.min(months, careerPlateauMonth);
+  
+  for (let month = basePromotionInterval; month <= maxPromotionMonth; month += basePromotionInterval + Math.floor(Math.random() * promotionVariation * 2 - promotionVariation)) {
+    let salaryIncrease = FINANCIAL_PARAMS.baseSalaryIncrease; // Configurable base salary increase
     let bonus = 0;
     let type: 'promotion' | 'bonus' | 'job_change' = 'promotion';
     
+    // Career progression phases
+    const isEarlyCareer = month <= 60; // First 5 years
+    const isMidCareer = month > 60 && month <= 120; // Years 5-10
+    const isLateCareer = month > 120 && month <= 180; // Years 10-15
+    const isPostCareer = month > 180; // After 15 years
+    
+    // Reduce promotion frequency and size over time
+    let promotionProbability = 1.0;
+    if (isMidCareer) promotionProbability = 0.8;
+    if (isLateCareer) promotionProbability = 0.6;
+    if (isPostCareer) promotionProbability = 0.1; // Very rare after 15 years
+    
+    // Skip this promotion if probability check fails
+    if (Math.random() > promotionProbability) continue;
+    
     switch (model) {
       case 'optimistic':
-        salaryIncrease = 0.15; // 15% increase
-        bonus = 0.1; // 10% bonus
+        if (isEarlyCareer) {
+          salaryIncrease = 0.15; // 15% increase
+          bonus = 0.1; // 10% bonus
+        } else if (isMidCareer) {
+          salaryIncrease = 0.12; // 12% increase
+          bonus = 0.08; // 8% bonus
+        } else if (isLateCareer) {
+          salaryIncrease = 0.08; // 8% increase
+          bonus = 0.05; // 5% bonus
+        } else {
+          salaryIncrease = 0.03; // 3% increase (minimal)
+          bonus = 0.02; // 2% bonus
+        }
         type = Math.random() < 0.3 ? 'job_change' : 'promotion';
         break;
       case 'realistic':
-        salaryIncrease = 0.08; // 8% increase
-        bonus = 0.05; // 5% bonus
+        if (isEarlyCareer) {
+          salaryIncrease = 0.08; // 8% increase
+          bonus = 0.05; // 5% bonus
+        } else if (isMidCareer) {
+          salaryIncrease = 0.06; // 6% increase
+          bonus = 0.04; // 4% bonus
+        } else if (isLateCareer) {
+          salaryIncrease = 0.04; // 4% increase
+          bonus = 0.03; // 3% bonus
+        } else {
+          salaryIncrease = 0.02; // 2% increase (minimal)
+          bonus = 0.01; // 1% bonus
+        }
         break;
       case 'conservative':
-        salaryIncrease = 0.05; // 5% increase
-        bonus = 0.02; // 2% bonus
+        if (isEarlyCareer) {
+          salaryIncrease = 0.05; // 5% increase
+          bonus = 0.02; // 2% bonus
+        } else if (isMidCareer) {
+          salaryIncrease = 0.04; // 4% increase
+          bonus = 0.02; // 2% bonus
+        } else if (isLateCareer) {
+          salaryIncrease = 0.03; // 3% increase
+          bonus = 0.01; // 1% bonus
+        } else {
+          salaryIncrease = 0.01; // 1% increase (minimal)
+          bonus = 0.005; // 0.5% bonus
+        }
         break;
       case 'seasonal':
-        salaryIncrease = 0.06; // 6% increase
-        bonus = 0.03; // 3% bonus
+        if (isEarlyCareer) {
+          salaryIncrease = 0.06; // 6% increase
+          bonus = 0.03; // 3% bonus
+        } else if (isMidCareer) {
+          salaryIncrease = 0.05; // 5% increase
+          bonus = 0.02; // 2% bonus
+        } else if (isLateCareer) {
+          salaryIncrease = 0.03; // 3% increase
+          bonus = 0.02; // 2% bonus
+        } else {
+          salaryIncrease = 0.015; // 1.5% increase (minimal)
+          bonus = 0.01; // 1% bonus
+        }
         break;
       case 'exponential':
-        salaryIncrease = 0.12; // 12% increase
-        bonus = 0.08; // 8% bonus
+        if (isEarlyCareer) {
+          salaryIncrease = 0.12; // 12% increase
+          bonus = 0.08; // 8% bonus
+        } else if (isMidCareer) {
+          salaryIncrease = 0.10; // 10% increase
+          bonus = 0.06; // 6% bonus
+        } else if (isLateCareer) {
+          salaryIncrease = 0.06; // 6% increase
+          bonus = 0.04; // 4% bonus
+        } else {
+          salaryIncrease = 0.03; // 3% increase (minimal)
+          bonus = 0.02; // 2% bonus
+        }
         break;
       case 'savings':
-        salaryIncrease = 0.04; // 4% increase (minimal)
+        if (isEarlyCareer) {
+          salaryIncrease = 0.04; // 4% increase (minimal)
+        } else if (isMidCareer) {
+          salaryIncrease = 0.03; // 3% increase
+        } else if (isLateCareer) {
+          salaryIncrease = 0.02; // 2% increase
+        } else {
+          salaryIncrease = 0.01; // 1% increase (minimal)
+        }
         break;
       case 'linear':
-        salaryIncrease = 0.06; // 6% increase
+        if (isEarlyCareer) {
+          salaryIncrease = 0.06; // 6% increase
+        } else if (isMidCareer) {
+          salaryIncrease = 0.05; // 5% increase
+        } else if (isLateCareer) {
+          salaryIncrease = 0.04; // 4% increase
+        } else {
+          salaryIncrease = 0.02; // 2% increase (minimal)
+        }
         break;
     }
     
@@ -192,8 +283,8 @@ export function calculateLinearModel(data: FinancialData, months: number): Timel
       }
     }
     
-    // Calculate expenses with inflation
-    const inflationRate = 0.03; // 3% annual inflation
+    // Calculate expenses with inflation (configurable)
+    const inflationRate = FINANCIAL_PARAMS.annualInflationRate;
     const inflationAdjustment = Math.pow(1 + inflationRate / 12, month - 1);
     const adjustedExpenses = totalMonthlyExpenses * inflationAdjustment;
     
@@ -205,7 +296,16 @@ export function calculateLinearModel(data: FinancialData, months: number): Timel
     currentSavings += monthlySavings;
     
     // Linear growth: Future Value = Initial Value + (Growth Amount * Number of Periods)
-    const monthlyGrowthAmount = 500; // Fixed amount added each month
+    // Career plateau adjustments
+    const isCareerPlateau = month > 180; // After 15 years - career plateau
+    
+    let monthlyGrowthAmount = 500; // Fixed amount added each month
+    
+    // POST-CAREER PLATEAU: Increase growth amount since promotions are rare
+    if (isCareerPlateau) {
+      monthlyGrowthAmount = 800; // Higher growth amount after career plateau
+    }
+    
     currentSavings += monthlyGrowthAmount;
     
     // Simple debt reduction
@@ -255,8 +355,8 @@ export function calculateExponentialModel(data: FinancialData, months: number): 
       }
     }
     
-    // Calculate expenses with inflation
-    const inflationRate = 0.03;
+    // Calculate expenses with inflation (configurable)
+    const inflationRate = FINANCIAL_PARAMS.annualInflationRate;
     const inflationAdjustment = Math.pow(1 + inflationRate / 12, month - 1);
     const adjustedExpenses = totalMonthlyExpenses * inflationAdjustment;
     
@@ -267,36 +367,49 @@ export function calculateExponentialModel(data: FinancialData, months: number): 
     
     currentSavings += monthlySavings;
     
-    // TRUE EXPONENTIAL GROWTH - Compound returns
-    let annualReturnRate = 0.12; // 12% annual return
+    // TRUE EXPONENTIAL GROWTH - Compound returns (configurable)
+    let annualReturnRate = FINANCIAL_PARAMS.investmentReturnRate * 2; // 2x base rate for exponential model
     let monthlyReturnRate = annualReturnRate / 12;
     
-    // Long-term adjustments for exponential model
+    // Career plateau and long-term adjustments for exponential model
+    const isCareerPlateau = month > 180; // After 15 years - career plateau
     const isLongTerm = month > 240; // 20+ years
     const isUltraLongTerm = month > 360; // 30+ years
     
+    // POST-CAREER PLATEAU: Even more aggressive investing after 15 years
+    if (isCareerPlateau) {
+      // After 15 years: Maximum investment allocation since promotions are rare
+      annualReturnRate = FINANCIAL_PARAMS.investmentReturnRate * 2.2; // 2.2x base rate
+      monthlyReturnRate = annualReturnRate / 12;
+    }
+    
     if (isLongTerm) {
       // 20+ years: Slightly more conservative but still aggressive
-      annualReturnRate = 0.10; // 10% annual return
+      annualReturnRate = 0.12; // 12% annual return (still high)
       monthlyReturnRate = annualReturnRate / 12;
     }
     
     if (isUltraLongTerm) {
       // 30+ years: More conservative for retirement
-      annualReturnRate = 0.08; // 8% annual return
+      annualReturnRate = 0.10; // 10% annual return
       monthlyReturnRate = annualReturnRate / 12;
     }
     
-    // 80% goes to investments for exponential growth
-    let monthlyInvestment = monthlySavings * 0.8;
+    // Investment allocation based on career stage
+    let monthlyInvestment = monthlySavings * 0.8; // 80% goes to investments for exponential growth
+    
+    // POST-CAREER PLATEAU: Maximum investment allocation
+    if (isCareerPlateau) {
+      monthlyInvestment = monthlySavings * 0.9; // 90% to investments after career plateau
+    }
     
     // Long-term allocation adjustments
     if (isLongTerm) {
-      monthlyInvestment = monthlySavings * 0.7; // 70% to investments
+      monthlyInvestment = monthlySavings * 0.8; // 80% to investments
     }
     
     if (isUltraLongTerm) {
-      monthlyInvestment = monthlySavings * 0.6; // 60% to investments
+      monthlyInvestment = monthlySavings * 0.7; // 70% to investments
     }
     
     investmentPortfolio += monthlyInvestment;
@@ -424,12 +537,13 @@ export function calculateRealisticModel(data: FinancialData, months: number): Ti
     const marketTrend = getMarketTrend();
     const sectorPerformance = getSectorPerformance();
     
-    // Enhanced long-term projections (20+ years)
+    // Enhanced long-term projections with career plateau
+    const isCareerPlateau = month > 180; // After 15 years - career plateau
     const isLongTerm = month > 240; // 20+ years
     const isUltraLongTerm = month > 360; // 30+ years
     
-    // Calculate expenses with inflation
-    const inflationRate = 0.03;
+    // Calculate expenses with inflation (configurable)
+    const inflationRate = FINANCIAL_PARAMS.annualInflationRate;
     const inflationAdjustment = Math.pow(1 + inflationRate / 12, month - 1);
     const adjustedExpenses = totalMonthlyExpenses * inflationAdjustment;
     
@@ -444,17 +558,25 @@ export function calculateRealisticModel(data: FinancialData, months: number): Ti
     let monthlyReturn = marketData.combined.return;
     let monthlyInvestment = monthlySavings * 0.4; // 40% to investments
     
+    // POST-CAREER PLATEAU: Focus more on investments after 15 years
+    if (isCareerPlateau) {
+      // After 15 years: Increase investment allocation since promotions are rare
+      monthlyInvestment = monthlySavings * 0.6; // 60% to investments
+      // Slightly more aggressive since we're relying on investments for growth
+      monthlyReturn *= 1.1; // 10% boost to returns
+    }
+    
     // Long-term adjustments
     if (isLongTerm) {
       // 20+ years: More conservative allocation, lower volatility
-      monthlyInvestment = monthlySavings * 0.3; // 30% to investments
-      monthlyReturn *= 0.8; // 20% reduction in volatility
+      monthlyInvestment = monthlySavings * 0.5; // 50% to investments (still high due to career plateau)
+      monthlyReturn *= 0.9; // 10% reduction in volatility
     }
     
     if (isUltraLongTerm) {
       // 30+ years: Very conservative, focus on preservation
-      monthlyInvestment = monthlySavings * 0.2; // 20% to investments
-      monthlyReturn *= 0.6; // 40% reduction in volatility
+      monthlyInvestment = monthlySavings * 0.3; // 30% to investments
+      monthlyReturn *= 0.7; // 30% reduction in volatility
     }
     
     investmentPortfolio += monthlyInvestment;
@@ -554,8 +676,8 @@ export function calculateConservativeModel(data: FinancialData, months: number):
       }
     }
     
-    // Calculate expenses with inflation
-    const inflationRate = 0.03;
+    // Calculate expenses with inflation (configurable)
+    const inflationRate = FINANCIAL_PARAMS.annualInflationRate;
     const inflationAdjustment = Math.pow(1 + inflationRate / 12, month - 1);
     const adjustedExpenses = totalMonthlyExpenses * inflationAdjustment;
     
@@ -567,7 +689,15 @@ export function calculateConservativeModel(data: FinancialData, months: number):
     currentSavings += monthlySavings;
     
     // Conservative growth - prioritize emergency fund
-    const conservativeReturnRate = 0.025; // 2.5% annual return
+    let conservativeReturnRate = 0.025; // 2.5% annual return
+    
+    // Career plateau adjustments
+    const isCareerPlateau = month > 180; // After 15 years - career plateau
+    
+    // POST-CAREER PLATEAU: Slightly more aggressive after career plateau
+    if (isCareerPlateau) {
+      conservativeReturnRate = 0.035; // 3.5% annual return after career plateau
+    }
     
     if (emergencyFund < emergencyFundTarget) {
       // Build emergency fund first
@@ -625,8 +755,8 @@ export function calculateSavingsModel(data: FinancialData, months: number): Time
       }
     }
     
-    // Calculate expenses with inflation
-    const inflationRate = 0.03;
+    // Calculate expenses with inflation (configurable)
+    const inflationRate = FINANCIAL_PARAMS.annualInflationRate;
     const inflationAdjustment = Math.pow(1 + inflationRate / 12, month - 1);
     const adjustedExpenses = totalMonthlyExpenses * inflationAdjustment;
     
@@ -693,8 +823,8 @@ export function calculateOptimisticModel(data: FinancialData, months: number): T
       }
     }
     
-    // Calculate expenses with inflation
-    const inflationRate = 0.03;
+    // Calculate expenses with inflation (configurable)
+    const inflationRate = FINANCIAL_PARAMS.annualInflationRate;
     const inflationAdjustment = Math.pow(1 + inflationRate / 12, month - 1);
     const adjustedExpenses = totalMonthlyExpenses * inflationAdjustment;
     
@@ -705,12 +835,26 @@ export function calculateOptimisticModel(data: FinancialData, months: number): T
     
     currentSavings += monthlySavings;
     
-    // Optimistic investment growth
-    const annualReturnRate = 0.15; // 15% annual return
-    const monthlyReturnRate = annualReturnRate / 12;
+    // Optimistic investment growth (configurable)
+    let annualReturnRate = FINANCIAL_PARAMS.investmentReturnRate * 2.5; // 2.5x base rate for optimistic model
+    let monthlyReturnRate = annualReturnRate / 12;
     
-    // 80% goes to investments for aggressive growth
-    const monthlyInvestment = monthlySavings * 0.8;
+    // Career plateau adjustments for optimistic model
+    const isCareerPlateau = month > 180; // After 15 years - career plateau
+    
+    // POST-CAREER PLATEAU: Even more aggressive after 15 years
+    if (isCareerPlateau) {
+      annualReturnRate = FINANCIAL_PARAMS.investmentReturnRate * 2.8; // 2.8x base rate after career plateau
+      monthlyReturnRate = annualReturnRate / 12;
+    }
+    
+    // Investment allocation based on career stage
+    let monthlyInvestment = monthlySavings * 0.8; // 80% goes to investments for aggressive growth
+    
+    // POST-CAREER PLATEAU: Maximum investment allocation
+    if (isCareerPlateau) {
+      monthlyInvestment = monthlySavings * 0.9; // 90% to investments after career plateau
+    }
     investmentPortfolio += monthlyInvestment;
     currentSavings -= monthlyInvestment;
     

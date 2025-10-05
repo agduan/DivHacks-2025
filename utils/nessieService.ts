@@ -77,24 +77,34 @@ export class NessieService {
    * Validate and sanitize customer ID
    */
   private static sanitizeCustomerId(customerId: string): string {
-    // Remove any non-alphanumeric characters
-    const sanitized = customerId.replace(/[^a-zA-Z0-9-_]/g, '');
-    if (sanitized.length === 0) {
-      throw new Error('Invalid customer ID format');
+    // Validate customer ID format (alphanumeric, hyphens, underscores only)
+    if (!/^[a-zA-Z0-9-_]+$/.test(customerId)) {
+      throw new Error('Invalid customer ID format - only alphanumeric characters, hyphens, and underscores allowed');
     }
-    return sanitized;
+    
+    // Check length limits
+    if (customerId.length < 1 || customerId.length > 50) {
+      throw new Error('Customer ID must be between 1 and 50 characters');
+    }
+    
+    return customerId;
   }
 
   /**
    * Validate and sanitize account ID
    */
   private static sanitizeAccountId(accountId: string): string {
-    // Remove any non-alphanumeric characters
-    const sanitized = accountId.replace(/[^a-zA-Z0-9-_]/g, '');
-    if (sanitized.length === 0) {
-      throw new Error('Invalid account ID format');
+    // Validate account ID format (alphanumeric, hyphens, underscores only)
+    if (!/^[a-zA-Z0-9-_]+$/.test(accountId)) {
+      throw new Error('Invalid account ID format - only alphanumeric characters, hyphens, and underscores allowed');
     }
-    return sanitized;
+    
+    // Check length limits
+    if (accountId.length < 1 || accountId.length > 50) {
+      throw new Error('Account ID must be between 1 and 50 characters');
+    }
+    
+    return accountId;
   }
 
   /**

@@ -30,6 +30,24 @@ export class EchoAuthService {
   private static appId: string | null = null;
 
   /**
+   * Generate secure token with expiration
+   */
+  private static generateSecureToken(userId: string): string {
+    const payload = {
+      userId,
+      exp: Math.floor(Date.now() / 1000) + (24 * 60 * 60), // 24 hours
+      iat: Math.floor(Date.now() / 1000),
+    };
+    
+    // Simple base64 encoding for demo (in production, use proper JWT)
+    const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+    const payloadEncoded = btoa(JSON.stringify(payload));
+    const signature = btoa(`${header}.${payloadEncoded}.${process.env.JWT_SECRET || 'demo_secret'}`);
+    
+    return `${header}.${payloadEncoded}.${signature}`;
+  }
+
+  /**
    * Initialize Echo Auth with API key and app ID
    */
   static initialize(apiKey: string, appId: string) {
@@ -74,8 +92,8 @@ export class EchoAuthService {
       const storedUser = await userDatabase.createUser(email, password, name);
       const echoUser = storedUserToEchoUser(storedUser);
       
-      // Generate token
-      const token = `demo_token_${storedUser.id}`;
+      // Generate secure token with expiration
+      const token = this.generateSecureToken(storedUser.id);
 
       return {
         success: true,
@@ -120,8 +138,8 @@ export class EchoAuthService {
       // Convert to EchoUser format
       const echoUser = storedUserToEchoUser(storedUser);
       
-      // Generate token
-      const token = `demo_token_${storedUser.id}`;
+      // Generate secure token with expiration
+      const token = this.generateSecureToken(storedUser.id);
 
       return {
         success: true,

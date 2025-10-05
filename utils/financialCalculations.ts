@@ -39,12 +39,12 @@ export function calculateFinancialProjection(data: FinancialData, months: number
   const monthlySavingsRate = FINANCIAL_PARAMS.savingsInterestRate / 12;
   const monthlyDebtRate = FINANCIAL_PARAMS.debtInterestRate / 12;
   
-  // Emergency fund target (6 months expenses from config)
+  // Emergency fund target (configurable months of expenses)
   const emergencyFundTarget = totalMonthlyExpenses * FINANCIAL_PARAMS.emergencyFundMonths;
   
-  // Investment allocation (after emergency fund is built)
-  const investmentAllocation = 0.5; // 50% of savings go to investments (conservative)
-  const investmentReturnRate = 0.06; // 6% annual investment return (realistic)
+  // Investment allocation (configurable)
+  const investmentAllocation = FINANCIAL_PARAMS.investmentAllocation;
+  const investmentReturnRate = FINANCIAL_PARAMS.investmentReturnRate;
   const monthlyInvestmentRate = investmentReturnRate / 12;
 
   let currentSavings = data.currentSavings;
@@ -63,9 +63,12 @@ export function calculateFinancialProjection(data: FinancialData, months: number
     totalSpent += inflatedExpenses;
     totalSaved += actualMonthlySavings;
     
-    // Emergency fund building (priority)
+    // Emergency fund building (priority) - use configurable allocation
     if (emergencyFund < emergencyFundTarget) {
-      const emergencyContribution = Math.min(actualMonthlySavings, emergencyFundTarget - emergencyFund);
+      const emergencyContribution = Math.min(
+        actualMonthlySavings * FINANCIAL_PARAMS.emergencyFundAllocation, 
+        emergencyFundTarget - emergencyFund
+      );
       emergencyFund += emergencyContribution;
       currentSavings += emergencyContribution;
       

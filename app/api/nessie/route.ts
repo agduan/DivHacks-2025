@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { NessieService } from '@/utils/nessieService';
 import { logger } from '@/utils/monitoring';
+import { checkRateLimit, addSecurityHeaders, validateAPIInput } from '@/utils/security';
 import { z } from 'zod';
 
 const SERVICE_NAME = 'NessieRoute';
@@ -30,6 +31,18 @@ const PostRequestSchema = z.object({
  */
 export async function GET(request: NextRequest) {
   try {
+    // Check rate limit
+    const rateLimit = checkRateLimit(request);
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { 
+          error: 'Rate limit exceeded',
+          retryAfter: Math.ceil((rateLimit.resetTime - Date.now()) / 1000),
+        },
+        { status: 429 }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
     
     // Validate query parameters
@@ -76,31 +89,39 @@ export async function GET(request: NextRequest) {
       logger.warn(SERVICE_NAME, 'API call failed, returned fallback data', {
         error: result.error,
       });
+      return NextResponse.json({
+        transactions: result.data?.transactions || [],
+        parsedData: result.data?.parsedData,
+        success: false,
+        source: result.source,
+        error: result.error,
+      }, { status: 503 }); // Service Unavailable for fallback
     }
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       transactions: result.data?.transactions || [],
       parsedData: result.data?.parsedData,
       success: result.success,
       source: result.source,
-      error: result.error,
     });
+
+    // Add security headers
+    addSecurityHeaders(response.headers);
+    
+    return response;
     
   } catch (error) {
     logger.error(SERVICE_NAME, 'GET request failed', error as Error);
     
-    // Always return mock data on error to keep the app functional
-    const result = await NessieService.getAccountTransactions('', true);
-    
+    // Return proper error status instead of 200 with fallback
     return NextResponse.json(
       {
-        transactions: result.data?.transactions || [],
-        parsedData: result.data?.parsedData,
-        success: true,
-        source: 'fallback',
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: 'Internal server error',
+        details: error instanceof Error ? error.message : 'Unknown error',
+        success: false,
+        source: 'error',
       },
-      { status: 200 } // Return 200 with fallback data to keep app working
+      { status: 500 } // Internal Server Error
     );
   }
 }

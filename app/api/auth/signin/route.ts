@@ -6,9 +6,14 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { email, password } = body;
 
+    // Input validation
     if (!email || !password) {
       return NextResponse.json(
-        { error: 'Email and password are required' },
+        { 
+          error: 'Email and password are required',
+          code: 'MISSING_CREDENTIALS',
+          success: false 
+        },
         { status: 400 }
       );
     }
@@ -18,7 +23,11 @@ export async function POST(request: NextRequest) {
     
     if (!apiKey || !appId) {
       return NextResponse.json(
-        { error: 'Echo API not configured' },
+        { 
+          error: 'Echo API not configured',
+          code: 'API_NOT_CONFIGURED',
+          success: false 
+        },
         { status: 500 }
       );
     }
@@ -43,17 +52,27 @@ export async function POST(request: NextRequest) {
           customerId,
         },
         token: result.token,
+        source: 'echo-auth',
       });
     } else {
       return NextResponse.json(
-        { error: result.error || 'Signin failed' },
+        { 
+          error: result.error || 'Signin failed',
+          code: 'AUTHENTICATION_FAILED',
+          success: false 
+        },
         { status: 401 }
       );
     }
   } catch (error) {
     console.error('Signin error:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { 
+        error: 'Internal server error',
+        code: 'INTERNAL_ERROR',
+        details: error instanceof Error ? error.message : 'Unknown error',
+        success: false 
+      },
       { status: 500 }
     );
   }
