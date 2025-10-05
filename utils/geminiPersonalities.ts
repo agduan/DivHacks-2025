@@ -169,7 +169,7 @@ async function analyzeWithGeminiPersonality(
       // Clean up the content first
       let cleanContent = content.trim();
       
-      // Remove markdown code blocks
+      // Remove markdown code blocks more aggressively
       if (cleanContent.includes('```json')) {
         cleanContent = cleanContent.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
       }
@@ -177,9 +177,23 @@ async function analyzeWithGeminiPersonality(
         cleanContent = cleanContent.replace(/```\n?/g, '').trim();
       }
       
-      // Try to find JSON object
+      // Try to find JSON object - be more flexible
+      let jsonText = cleanContent;
       const jsonMatch = cleanContent.match(/\{[\s\S]*\}/);
-      const jsonText = jsonMatch ? jsonMatch[0] : cleanContent;
+      if (jsonMatch) {
+        jsonText = jsonMatch[0];
+      }
+      
+      // If still no JSON found, try to extract from the beginning
+      if (!jsonText.includes('{')) {
+        const lines = cleanContent.split('\n');
+        for (const line of lines) {
+          if (line.trim().startsWith('{')) {
+            jsonText = line.trim();
+            break;
+          }
+        }
+      }
       
       parsed = JSON.parse(jsonText);
       
