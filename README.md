@@ -14,7 +14,7 @@ You get visual comparisons with pixel-art avatars showing your current vs. futur
 ## Features
 
 - **Data Input**: Import mock transaction data from Capital One's Nessie API or enter your own numbers
-- **AI Forecasting**: Multiple AI agents (GPT, Claude, Gemini) predict your financial future
+- **AI Forecasting**: 3 different versions of Gemini predicts your financial future
 - **Timeline Visualization**: Side-by-side charts comparing different financial paths
 - **Avatar States**: Watch your financial avatar evolve from struggling → stable → thriving → wealthy
 - **AI Comparison Panel**: See how different AI models predict your future and which one is most reliable (using Opik evaluation)
@@ -27,8 +27,8 @@ You get visual comparisons with pixel-art avatars showing your current vs. futur
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS (custom sci-fi/retro theme)
 - **Charts**: Recharts
-- **API Integration**: Capital One Nessie API (mock data included)
-- **AI Evaluation**: Opik (placeholder for multi-agent comparison)
+- **API Integration**: Google Gemini API, Opik API for AI Evaluation, Capital One Nessie API (mock data included)
+- **AI Evaluation**: Opik
 
 ## Getting Started
 
@@ -50,7 +50,7 @@ You get visual comparisons with pixel-art avatars showing your current vs. futur
    ```
    Then add your API keys:
    - **Opik** (free): Get key at [comet.com/opik](https://www.comet.com/site/products/opik/)
-   - **OpenAI, Anthropic, Google AI** (optional): For real predictions
+   - **Google Gemini** (optional): For real predictions
    
    See [OPIK_INTEGRATION.md](./OPIK_INTEGRATION.md) for detailed setup guide
 
@@ -86,7 +86,7 @@ You get visual comparisons with pixel-art avatars showing your current vs. futur
 
 ## Customization
 
-- **Add more AI agents**: Edit `app/api/ai-agents/route.ts`
+- **Change AI logic**: Edit `app/api/ai-agents/route.ts`
 - **Change theme colors**: Update `tailwind.config.ts`
 - **Adjust calculation logic**: Modify `utils/financialCalculations.ts`
 - **Add real APIs**: Replace mock data in API routes with actual calls
@@ -106,7 +106,7 @@ The app supports **real AI evaluation** with Opik:
 
 - **Without API keys**: Uses mock predictions and evaluations (perfect for demos)
 - **With Opik key**: Tracks predictions and provides real consistency/accuracy scores
-- **With AI keys**: Gets actual insights from GPT-4, Claude, and Gemini
+- **With Gemini key**: Gets actual insights from Google Gemini
 
 All integrations are optional and the app works great without them!
 
