@@ -10,11 +10,11 @@ const config: Config = {
     extend: {
       colors: {
         neon: {
-          // Original vibrant sci-fi colors with slight dimming
-          blue: '#00f0ff',
-          pink: '#ff00ff', 
-          green: '#00ff41',
-          purple: '#9d00ff',
+          // Medium saturation - balance between vibrant and muted
+          blue: '#5dbce8',
+          pink: '#ea70ff', 
+          green: '#5dd98a',
+          purple: '#b070e8',
         },
         retro: {
           dark: '#0a0e27',

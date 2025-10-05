@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Avatar from '@/components/Avatar';
+import DinoSprite from '@/components/DinoSprite';
 import FinancialInputForm from '@/components/FinancialInputForm';
 import ScenarioAdjuster from '@/components/ScenarioAdjuster';
 import TimelineChart from '@/components/TimelineChart';
@@ -16,6 +17,7 @@ export default function Home() {
   const [scenarioChanges, setScenarioChanges] = useState<ScenarioChange[]>([]);
   const [timelineMonths, setTimelineMonths] = useState<number>(12);
   const [loading, setLoading] = useState(false);
+  const [dinoAnimation, setDinoAnimation] = useState<'walk' | 'run' | 'hurt'>('walk');
 
   // Calculate timelines
   const statusQuoTimeline = calculateStatusQuo(financialData, timelineMonths);
@@ -105,10 +107,54 @@ export default function Home() {
 
   const handleTimeTravel = async () => {
     setLoading(true);
+    // Dino keeps running during calculation
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
     setTimelineMonths(timelineMonths + 12);
     setLoading(false);
+    
+    // After calculation, show hurt animation
+    console.log('💥 Dino hurt!');
+    setDinoAnimation('hurt');
+    
+    // Return to walk after hurt animation completes
+    setTimeout(() => {
+      console.log('🚶 Dino back to walking');
+      setDinoAnimation('walk');
+    }, 600); // Match the hurt animation duration
+  };
+
+  // Handle scenario changes - start running when changes are added
+  const handleScenarioChanges = (changes: ScenarioChange[]) => {
+    setScenarioChanges(changes);
+    if (changes.length > 0) {
+      console.log('🏃 Dino running - changes added:', changes.length);
+      setDinoAnimation('run');
+    } else {
+      console.log('🚶 Dino walking - no changes');
+      setDinoAnimation('walk');
+    }
+  };
+
+  // Determine which dino to show based on what-if scenario
+  const getDinoVariant = (): 'doux' | 'mort' | 'vita' | 'tard' => {
+    if (!whatIfFinal) {
+      // Default: blue dino (doux)
+      return 'doux';
+    }
+    
+    // Rich (thriving): green dino (vita)
+    if (futureWhatIfState === 'thriving') {
+      return 'vita';
+    }
+    
+    // Poor (struggling): red dino (mort)
+    if (futureWhatIfState === 'struggling') {
+      return 'mort';
+    }
+    
+    // Default for stable or other states: blue dino (doux)
+    return 'doux';
   };
 
   return (
@@ -117,8 +163,9 @@ export default function Home() {
       <header className="sticky top-0 z-50 border-b-2 border-neon-green/50 bg-retro-darker/95 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div>
+            <div className="flex items-center gap-8">
+              <DinoSprite variant={getDinoVariant()} animation={dinoAnimation} className="ml-2" />
+              <div className="ml-2">
                 <h1 className="text-3xl font-bold text-neon-blue uppercase tracking-wider neon-glow">
                   Financial Time Machine
                 </h1>
@@ -142,7 +189,7 @@ export default function Home() {
             initialData={financialData}
             onDataChange={setFinancialData}
           />
-          <ScenarioAdjuster onChangesUpdate={setScenarioChanges} />
+          <ScenarioAdjuster onChangesUpdate={handleScenarioChanges} />
         </div>
 
         {/* Time Travel Button */}
@@ -159,9 +206,7 @@ export default function Home() {
               </>
             ) : (
               <>
-                <span>🚀</span>
                 Travel to Next Year!
-                <span>🚀</span>
               </>
             )}
           </button>

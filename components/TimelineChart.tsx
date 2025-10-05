@@ -90,19 +90,19 @@ export default function TimelineChart({ statusQuoData, whatIfData, onTimeRangeCh
           <Line
             type="monotone"
             dataKey="statusQuoNetWorth"
-            stroke="#ff00ff"
+            stroke="#ea70ff"
             strokeWidth={2}
             name="Current Path (Net Worth)"
-            dot={{ fill: '#ff00ff' }}
+            dot={{ fill: '#ea70ff' }}
           />
           {whatIfData && (
             <Line
               type="monotone"
               dataKey="whatIfNetWorth"
-              stroke="#00ff41"
+              stroke="#5dd98a"
               strokeWidth={2}
               name="What-If Path (Net Worth)"
-              dot={{ fill: '#00ff41' }}
+              dot={{ fill: '#5dd98a' }}
             />
           )}
         </LineChart>

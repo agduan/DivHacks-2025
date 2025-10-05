@@ -25,14 +25,14 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #00f0ff;
+  background: #5dbce8;
   border-radius: 4px;
-  box-shadow: 0 0 8px rgba(0, 240, 255, 0.8);
+  box-shadow: 0 0 8px rgba(93, 188, 232, 0.8);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #00ff41;
-  box-shadow: 0 0 12px rgba(0, 255, 65, 0.8);
+  background: #5dd98a;
+  box-shadow: 0 0 12px rgba(93, 217, 138, 0.8);
 }
 
 /* Enhanced sci-fi glow effects */
@@ -50,23 +50,23 @@ body {
 }
 
 .glow-blue { 
-  box-shadow: 0 0 8px rgba(0, 240, 255, 0.3);
+  box-shadow: 0 0 8px rgba(93, 188, 232, 0.3);
 }
 
 .glow-teal { 
-  box-shadow: 0 0 8px rgba(0, 255, 65, 0.3);
+  box-shadow: 0 0 8px rgba(93, 217, 138, 0.3);
 }
 
 .glow-purple { 
-  box-shadow: 0 0 8px rgba(157, 0, 255, 0.3);
+  box-shadow: 0 0 8px rgba(176, 112, 232, 0.3);
 }
 
 .glow-green { 
-  box-shadow: 0 0 8px rgba(0, 255, 65, 0.3);
+  box-shadow: 0 0 8px rgba(93, 217, 138, 0.3);
 }
 
 .glow-pink { 
-  box-shadow: 0 0 8px rgba(255, 0, 255, 0.3);
+  box-shadow: 0 0 8px rgba(234, 112, 255, 0.3);
 }
 
 /* Button hover effects */
@@ -88,8 +88,75 @@ input:focus {
 /* Retro grid background - much more visible */
 .retro-grid {
   background-image: 
-    linear-gradient(0deg, transparent 24%, rgba(0, 240, 255, 0.15) 25%, rgba(0, 240, 255, 0.15) 26%, transparent 27%, transparent 74%, rgba(0, 240, 255, 0.15) 75%, rgba(0, 240, 255, 0.15) 76%, transparent 77%, transparent),
-    linear-gradient(90deg, transparent 24%, rgba(0, 240, 255, 0.15) 25%, rgba(0, 240, 255, 0.15) 26%, transparent 27%, transparent 74%, rgba(0, 240, 255, 0.15) 75%, rgba(0, 240, 255, 0.15) 76%, transparent 77%, transparent);
+    linear-gradient(0deg, transparent 24%, rgba(93, 188, 232, 0.15) 25%, rgba(93, 188, 232, 0.15) 26%, transparent 27%, transparent 74%, rgba(93, 188, 232, 0.15) 75%, rgba(93, 188, 232, 0.15) 76%, transparent 77%, transparent),
+    linear-gradient(90deg, transparent 24%, rgba(93, 188, 232, 0.15) 25%, rgba(93, 188, 232, 0.15) 26%, transparent 27%, transparent 74%, rgba(93, 188, 232, 0.15) 75%, rgba(93, 188, 232, 0.15) 76%, transparent 77%, transparent);
   background-size: 50px 50px;
+}
+
+/* Dino Sprite Animations */
+.dino-sprite {
+  background-repeat: no-repeat;
+}
+
+.dino-sprite-doux {
+  background-image: url('/dinos/DinoSprites - doux.png');
+}
+
+.dino-sprite-mort {
+  background-image: url('/dinos/DinoSprites - mort.png');
+}
+
+.dino-sprite-vita {
+  background-image: url('/dinos/DinoSprites - vita.png');
+}
+
+.dino-sprite-tard {
+  background-image: url('/dinos/DinoSprites - tard.png');
+}
+
+/* Idle animation - Row 0 (Idle), 4 frames */
+.dino-anim-walk {
+  animation: dino-walk 0.8s steps(4) infinite;
+  background-position-y: 0px;
+}
+
+@keyframes dino-walk {
+  from {
+    background-position-x: 0px;
+  }
+  to {
+    background-position-x: -96px; /* 24px * 4 frames */
+  }
+}
+
+/* Run animation - Row 1 (Walk), 6 frames */
+.dino-anim-run {
+  animation: dino-run 0.3s steps(6) infinite;
+  background-position-y: -24px; /* Second row */
+}
+
+@keyframes dino-run {
+  from {
+    background-position-x: 0px;
+  }
+  to {
+    background-position-x: -144px; /* 24px * 6 frames */
+  }
+}
+
+/* Hurt animation - Row 4 (Hit), 3 frames, plays once */
+.dino-anim-hurt {
+  animation: dino-hurt 0.6s steps(3) 1;
+  animation-fill-mode: forwards;
+  background-position-y: -96px; /* Fifth row (0, 24, 48, 72, 96) */
+}
+
+@keyframes dino-hurt {
+  from {
+    background-position-x: 0px;
+  }
+  to {
+    background-position-x: -72px; /* 24px * 3 frames */
+  }
 }
 
