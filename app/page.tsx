@@ -91,12 +91,12 @@ function MainApp() {
             <h3 className="text-lg font-bold text-neon-purple uppercase tracking-wide mb-3 font-vcr">
               Features
             </h3>
-            <ul className="text-left text-gray-300 space-y-2">
-              <li>🔮 AI-powered financial predictions</li>
-              <li>💰 Real-time billing and usage tracking</li>
-              <li>🏦 Integration with Nessie API for real financial data</li>
-              <li>📊 Multi-agent AI comparison</li>
-              <li>🎯 Personalized financial insights</li>
+            <ul className="text-left text-gray-300 space-y-2 list-disc list-inside">
+              <li>AI-powered financial predictions</li>
+              <li>Real-time billing and usage tracking</li>
+              <li>Integration with Nessie API for real financial data</li>
+              <li>Multi-agent AI comparison</li>
+              <li>Personalized financial insights</li>
             </ul>
           </div>
 
