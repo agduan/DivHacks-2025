@@ -1,28 +1,46 @@
-import { FinancialData, TimelinePrediction, ScenarioChange, AvatarState } from '@/types/financial';
+/**
+ * Financial Calculations
+ * Core financial modeling and projections with configurable parameters
+ */
 
+import { FinancialData, TimelinePrediction, ScenarioChange, AvatarState } from '@/types/financial';
+import { FINANCIAL_PARAMS } from '@/config';
+import { logger } from './monitoring';
+
+const SERVICE_NAME = 'FinancialCalculations';
+
+/**
+ * Calculate financial projection timeline (status quo)
+ * Export with alias for backwards compatibility
+ */
 export function calculateStatusQuo(data: FinancialData, months: number = 12): TimelinePrediction[] {
-  console.log('📊 Calculating sophisticated timeline with data:', { data, months });
+  return calculateFinancialProjection(data, months);
+}
+
+/**
+ * Calculate financial projection timeline with sophisticated modeling
+ */
+export function calculateFinancialProjection(data: FinancialData, months: number = 12): TimelinePrediction[] {
+  logger.info(SERVICE_NAME, `Calculating financial projection for ${months} months`);
+  
   const predictions: TimelinePrediction[] = [];
   const totalMonthlyExpenses = Object.values(data.monthlyExpenses).reduce((a, b) => a + b, 0);
   const monthlySavings = data.monthlyIncome - totalMonthlyExpenses;
   
-  console.log('📊 Financial calculations:', {
+  logger.debug(SERVICE_NAME, 'Financial inputs', {
     totalMonthlyExpenses,
     monthlySavings,
     currentSavings: data.currentSavings,
-    currentDebt: data.currentDebt
+    currentDebt: data.currentDebt,
   });
 
-  // Realistic financial modeling parameters
-  const annualInflationRate = 0.025; // 2.5% inflation (more realistic)
-  const monthlyInflationRate = annualInflationRate / 12;
-  const savingsInterestRate = 0.02; // 2% annual savings interest (realistic)
-  const monthlySavingsRate = savingsInterestRate / 12;
-  const debtInterestRate = 0.08; // 8% annual debt interest (realistic)
-  const monthlyDebtRate = debtInterestRate / 12;
+  // Use configurable parameters instead of hardcoded values
+  const monthlyInflationRate = FINANCIAL_PARAMS.annualInflationRate / 12;
+  const monthlySavingsRate = FINANCIAL_PARAMS.savingsInterestRate / 12;
+  const monthlyDebtRate = FINANCIAL_PARAMS.debtInterestRate / 12;
   
-  // Emergency fund target (3 months expenses - more achievable)
-  const emergencyFundTarget = totalMonthlyExpenses * 3;
+  // Emergency fund target (6 months expenses from config)
+  const emergencyFundTarget = totalMonthlyExpenses * FINANCIAL_PARAMS.emergencyFundMonths;
   
   // Investment allocation (after emergency fund is built)
   const investmentAllocation = 0.5; // 50% of savings go to investments (conservative)
@@ -67,13 +85,13 @@ export function calculateStatusQuo(data: FinancialData, months: number = 12): Ti
     currentSavings *= (1 + monthlySavingsRate);
     investmentPortfolio *= (1 + monthlyInvestmentRate);
     
-    // Debt management (realistic payoff strategy)
+    // Debt management (realistic payoff strategy using config parameter)
     if (currentDebt > 0) {
       // Minimum payment (3% of income)
       const minPayment = data.monthlyIncome * 0.03;
-      // Extra payment (up to 15% of income if emergency fund is built)
+      // Extra payment (using configured debt payment percentage if emergency fund is built)
       const extraPayment = emergencyFund >= emergencyFundTarget ? 
-        Math.min(data.monthlyIncome * 0.15, currentDebt) : 0;
+        Math.min(data.monthlyIncome * FINANCIAL_PARAMS.debtPaymentPercentage, currentDebt) : 0;
       
       const debtPayment = minPayment + extraPayment;
       const actualDebtPayment = Math.min(debtPayment, currentDebt);
@@ -98,22 +116,28 @@ export function calculateStatusQuo(data: FinancialData, months: number = 12): Ti
     });
   }
 
-  console.log('📊 Advanced model results:', {
+  logger.debug(SERVICE_NAME, 'Projection results', {
     finalNetWorth: predictions[predictions.length - 1].netWorth,
     finalSavings: predictions[predictions.length - 1].savings,
     finalDebt: predictions[predictions.length - 1].debt,
     investmentPortfolio,
-    emergencyFund
+    emergencyFund,
   });
 
   return predictions;
 }
 
+/**
+ * Calculate what-if scenario with applied changes
+ */
 export function calculateWhatIfScenario(
   data: FinancialData,
   changes: ScenarioChange[],
   months: number = 12
 ): TimelinePrediction[] {
+  logger.info(SERVICE_NAME, `Calculating what-if scenario with ${changes.length} changes`);
+  
+  // Deep clone to avoid mutations
   const modifiedData = JSON.parse(JSON.stringify(data)) as FinancialData;
 
   changes.forEach(change => {
@@ -133,9 +157,12 @@ export function calculateWhatIfScenario(
     }
   });
 
-  return calculateStatusQuo(modifiedData, months);
+  return calculateFinancialProjection(modifiedData, months);
 }
 
+/**
+ * Determine avatar state based on financial health
+ */
 export function determineAvatarState(netWorth: number, debt: number): AvatarState {
   if (netWorth > 50000 && debt === 0) return 'wealthy';
   if (netWorth > 10000 && debt < netWorth * 0.2) return 'thriving';
@@ -143,6 +170,9 @@ export function determineAvatarState(netWorth: number, debt: number): AvatarStat
   return 'struggling';
 }
 
+/**
+ * Generate insights comparing two scenarios
+ */
 export function generateInsights(
   statusQuo: TimelinePrediction[],
   whatIf: TimelinePrediction[]
@@ -155,13 +185,13 @@ export function generateInsights(
   const savingsDiff = wiFinal.savings - sqFinal.savings;
 
   if (netWorthDiff > 0) {
-    insights.push(`Your net worth could increase by $${netWorthDiff.toFixed(2)} in one year!`);
+    insights.push(`Your net worth could increase by ${formatCurrency(netWorthDiff)} in ${statusQuo.length} months!`);
   } else if (netWorthDiff < 0) {
-    insights.push(`Warning: This path could decrease your net worth by $${Math.abs(netWorthDiff).toFixed(2)}`);
+    insights.push(`Warning: This path could decrease your net worth by ${formatCurrency(Math.abs(netWorthDiff))}`);
   }
 
   if (savingsDiff > 5000) {
-    insights.push(`You could save an extra $${savingsDiff.toFixed(2)} by making these changes!`);
+    insights.push(`You could save an extra ${formatCurrency(savingsDiff)} by making these changes!`);
   }
 
   if (wiFinal.debt === 0 && sqFinal.debt > 0) {
@@ -178,6 +208,9 @@ export function generateInsights(
   return insights;
 }
 
+/**
+ * Format number as currency
+ */
 export function formatCurrency(amount: number): string {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -186,4 +219,3 @@ export function formatCurrency(amount: number): string {
     maximumFractionDigits: 0,
   }).format(amount);
 }
-

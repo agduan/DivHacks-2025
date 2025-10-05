@@ -46,10 +46,10 @@ export default function FinancialInputForm({ initialData, onDataChange }: Financ
         setApiStatus('loading');
         const result = await NessieService.getAccountTransactions('mock', true);
         
-        if (result.parsedData) {
+        if (result.data?.parsedData) {
           const newData = {
             ...data,
-            ...result.parsedData,
+            ...result.data.parsedData,
             // Keep current savings and debt as they might not be in transaction data
             currentSavings: data.currentSavings,
             currentDebt: data.currentDebt,
@@ -65,7 +65,8 @@ export default function FinancialInputForm({ initialData, onDataChange }: Financ
 
       // First, get customer accounts
       setApiStatus('loading');
-      const customerAccounts = await NessieService.getCustomerAccounts(customerId);
+      const accountsResult = await NessieService.getCustomerAccounts(customerId);
+      const customerAccounts = accountsResult.data || [];
       setAccounts(customerAccounts);
       
       if (customerAccounts.length === 0) {
@@ -96,10 +97,10 @@ export default function FinancialInputForm({ initialData, onDataChange }: Financ
     try {
       const result = await NessieService.getAccountTransactions(accountId);
       
-      if (result.parsedData) {
+      if (result.data?.parsedData) {
         const newData = {
           ...data,
-          ...result.parsedData,
+          ...result.data.parsedData,
           // Keep current savings and debt as they might not be in transaction data
           currentSavings: data.currentSavings,
           currentDebt: data.currentDebt,
@@ -247,7 +248,7 @@ export default function FinancialInputForm({ initialData, onDataChange }: Financ
                         <div><strong>Type:</strong> {account.type}</div>
                         <div><strong>Balance:</strong> ${account.balance.toFixed(2)}</div>
                         <div><strong>Rewards:</strong> {account.rewards}</div>
-                        <div><strong>Account Number:</strong> {account.account_number}</div>
+                        <div><strong>Account ID:</strong> {account._id}</div>
                       </div>
                     ) : null;
                   })()}

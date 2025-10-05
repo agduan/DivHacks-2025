@@ -86,7 +86,11 @@ export default function TimelineChart({ statusQuoData, whatIfData, onTimeRangeCh
             }}
             labelStyle={{ color: '#4a9eff' }}
           />
-          <Legend />
+          <Legend 
+            wrapperStyle={{ paddingTop: '20px' }}
+            verticalAlign="bottom"
+            height={36}
+          />
           <Line
             type="monotone"
             dataKey="statusQuoNetWorth"

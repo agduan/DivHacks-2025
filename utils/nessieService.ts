@@ -1,223 +1,392 @@
+/**
+ * Nessie API Service (Capital One)
+ * Secure, validated integration with proper error handling
+ */
+
+import { apiClient, ApiError } from './apiClient';
+import { API_CONFIG, CACHE_CONFIG } from '@/config';
+import { monitoring, logger } from './monitoring';
+import {
+  validateNessieTransaction,
+  validateNessieAccount,
+  validateNessieCustomer,
+  NessieTransactionSchema,
+  NessieAccountSchema,
+  NessieCustomerSchema,
+} from './validation';
 import { FinancialData } from '@/types/financial';
+import { z } from 'zod';
 
-export interface NessieAccount {
-  _id: string;
-  type: string;
-  nickname: string;
-  rewards: number;
-  balance: number;
-  account_number: string;
-  customer_id?: string;
-}
+// ==================== TYPES ====================
 
-export interface NessieCustomer {
-  _id: string;
-  first_name: string;
-  last_name: string;
-  address: {
-    street_number: string;
-    street_name: string;
-    city: string;
-    state: string;
-    zip: string;
-  };
-}
+export type NessieTransaction = z.infer<typeof NessieTransactionSchema>;
+export type NessieAccount = z.infer<typeof NessieAccountSchema>;
+export type NessieCustomer = z.infer<typeof NessieCustomerSchema>;
 
-export interface NessieTransaction {
-  _id: string;
-  type: 'debit' | 'credit';
-  transaction_date: string;
-  amount: number;
-  merchant_id?: string;
-  description: string;
-  category?: string;
-}
-
-export interface NessieApiResponse {
-  transactions?: NessieTransaction[];
-  accounts?: NessieAccount[];
-  parsedData?: Partial<FinancialData>;
+export interface NessieApiResponse<T = any> {
   success: boolean;
-  source: 'api' | 'mock' | 'fallback';
+  data?: T;
+  source: 'api' | 'mock' | 'fallback' | 'cache';
   error?: string;
 }
 
+// ==================== CONSTANTS ====================
+
+const SERVICE_NAME = 'Nessie';
+
+// ==================== MOCK DATA ====================
+
+const MOCK_TRANSACTIONS: NessieTransaction[] = [
+  {
+    _id: 'mock-trans-1',
+    merchant_id: 'mock-merchant-1',
+    medium: 'balance',
+    purchase_date: new Date().toISOString(),
+    amount: 150,
+    status: 'completed',
+    description: 'Grocery Store',
+  },
+  {
+    _id: 'mock-trans-2',
+    merchant_id: 'mock-merchant-2',
+    medium: 'balance',
+    purchase_date: new Date(Date.now() - 86400000).toISOString(),
+    amount: 45,
+    status: 'completed',
+    description: 'Gas Station',
+  },
+  {
+    _id: 'mock-trans-3',
+    merchant_id: 'mock-merchant-3',
+    medium: 'balance',
+    purchase_date: new Date(Date.now() - 172800000).toISOString(),
+    amount: 80,
+    status: 'completed',
+    description: 'Restaurant',
+  },
+];
+
+// ==================== NESSIE SERVICE ====================
+
 export class NessieService {
-  private static baseUrl = '/api/nessie';
+  private static isAvailable(): boolean {
+    return !!API_CONFIG.nessie.apiKey;
+  }
+
+  /**
+   * Validate and sanitize customer ID
+   */
+  private static sanitizeCustomerId(customerId: string): string {
+    // Remove any non-alphanumeric characters
+    const sanitized = customerId.replace(/[^a-zA-Z0-9-_]/g, '');
+    if (sanitized.length === 0) {
+      throw new Error('Invalid customer ID format');
+    }
+    return sanitized;
+  }
+
+  /**
+   * Validate and sanitize account ID
+   */
+  private static sanitizeAccountId(accountId: string): string {
+    // Remove any non-alphanumeric characters
+    const sanitized = accountId.replace(/[^a-zA-Z0-9-_]/g, '');
+    if (sanitized.length === 0) {
+      throw new Error('Invalid account ID format');
+    }
+    return sanitized;
+  }
+
+  /**
+   * Build request URL with API key
+   */
+  private static buildUrl(path: string): string {
+    if (!API_CONFIG.nessie.apiKey) {
+      throw new Error('Nessie API key not configured');
+    }
+    return `${API_CONFIG.nessie.baseUrl}${path}?key=${API_CONFIG.nessie.apiKey}`;
+  }
 
   /**
    * Fetch customer information from Nessie API
    */
-  static async getCustomerInfo(customerId: string): Promise<NessieCustomer> {
+  static async getCustomerInfo(customerId: string): Promise<NessieApiResponse<NessieCustomer>> {
     try {
-      const response = await fetch(`http://api.nessieisreal.com/customers/${customerId}?key=${process.env.NEXT_PUBLIC_NESSIE_API_KEY || '317082b558de224c2bc17b4646d7c356'}`);
-      
-      if (!response.ok) {
-        throw new Error(`Customer not found: ${response.status}`);
+      const sanitizedId = this.sanitizeCustomerId(customerId);
+      logger.info(SERVICE_NAME, `Fetching customer info for ${sanitizedId}`);
+
+      if (!this.isAvailable()) {
+        logger.warn(SERVICE_NAME, 'API key not configured, cannot fetch customer');
+        return {
+          success: false,
+          source: 'fallback',
+          error: 'Nessie API key not configured',
+        };
       }
 
-      const customer = await response.json();
-      return customer;
+      const startTime = Date.now();
+      const url = this.buildUrl(`/customers/${sanitizedId}`);
+
+      const response = await apiClient.request<NessieCustomer>({
+        url,
+        method: 'GET',
+        timeout: API_CONFIG.nessie.timeout,
+        retries: API_CONFIG.nessie.retries,
+        cache: true,
+        cacheTTL: CACHE_CONFIG.nessieAccounts,
+      });
+
+      // Validate response
+      const customer = validateNessieCustomer(response.data);
+
+      // Track metrics
+      monitoring.trackAPICall({
+        service: SERVICE_NAME,
+        endpoint: '/customers/:id',
+        method: 'GET',
+        duration: Date.now() - startTime,
+        status: response.status,
+        success: true,
+        cached: response.source === 'cache',
+      });
+
+      return {
+        success: true,
+        data: customer,
+        source: response.source === 'cache' ? 'cache' : 'api',
+      };
     } catch (error) {
-      console.error('Error fetching customer info:', error);
-      throw error;
+      logger.error(SERVICE_NAME, 'Failed to fetch customer info', error as Error, {
+        customerId,
+      });
+
+      return {
+        success: false,
+        source: 'fallback',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
     }
   }
 
   /**
    * Fetch customer accounts from Nessie API
    */
-  static async getCustomerAccounts(customerId: string): Promise<NessieAccount[]> {
+  static async getCustomerAccounts(
+    customerId: string
+  ): Promise<NessieApiResponse<NessieAccount[]>> {
     try {
-      const response = await fetch(this.baseUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const sanitizedId = this.sanitizeCustomerId(customerId);
+      logger.info(SERVICE_NAME, `Fetching accounts for customer ${sanitizedId}`);
+
+      if (!this.isAvailable()) {
+        logger.warn(SERVICE_NAME, 'API key not configured, cannot fetch accounts');
+        return {
+          success: false,
+          source: 'fallback',
+          error: 'Nessie API key not configured',
+        };
+      }
+
+      const startTime = Date.now();
+      const url = this.buildUrl(`/customers/${sanitizedId}/accounts`);
+
+      const response = await apiClient.request<NessieAccount[]>({
+        url,
+        method: 'GET',
+        timeout: API_CONFIG.nessie.timeout,
+        retries: API_CONFIG.nessie.retries,
+        cache: true,
+        cacheTTL: CACHE_CONFIG.nessieAccounts,
+      });
+
+      // Validate each account
+      const accounts = Array.isArray(response.data)
+        ? response.data.map((account) => validateNessieAccount(account))
+        : [];
+
+      // Track metrics
+      monitoring.trackAPICall({
+        service: SERVICE_NAME,
+        endpoint: '/customers/:id/accounts',
+        method: 'GET',
+        duration: Date.now() - startTime,
+        status: response.status,
+        success: true,
+        cached: response.source === 'cache',
+      });
+
+      return {
+        success: true,
+        data: accounts,
+        source: response.source === 'cache' ? 'cache' : 'api',
+      };
+    } catch (error) {
+      logger.error(SERVICE_NAME, 'Failed to fetch customer accounts', error as Error, {
+        customerId,
+      });
+
+      return {
+        success: false,
+        source: 'fallback',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
+    }
+  }
+
+  /**
+   * Fetch transactions for a specific account from Nessie API
+   */
+  static async getAccountTransactions(
+    accountId: string,
+    useMock: boolean = false
+  ): Promise<
+    NessieApiResponse<{ transactions: NessieTransaction[]; parsedData?: FinancialData }>
+  > {
+    try {
+      // If mock requested or API not available, return mock data
+      if (useMock || !this.isAvailable()) {
+        if (!this.isAvailable()) {
+          logger.warn(SERVICE_NAME, 'API key not configured, using mock data');
+        } else {
+          logger.info(SERVICE_NAME, 'Using mock data (requested)');
+        }
+
+        const parsedData = this.parseNessieData(MOCK_TRANSACTIONS);
+
+        return {
+          success: true,
+          data: {
+            transactions: MOCK_TRANSACTIONS,
+            parsedData,
+          },
+          source: 'mock',
+        };
+      }
+
+      const sanitizedId = this.sanitizeAccountId(accountId);
+      logger.info(SERVICE_NAME, `Fetching transactions for account ${sanitizedId}`);
+
+      const startTime = Date.now();
+      const url = this.buildUrl(`/accounts/${sanitizedId}/purchases`);
+
+      const response = await apiClient.request<NessieTransaction[]>({
+        url,
+        method: 'GET',
+        timeout: API_CONFIG.nessie.timeout,
+        retries: API_CONFIG.nessie.retries,
+        cache: true,
+        cacheTTL: CACHE_CONFIG.nessieTransactions,
+      });
+
+      // Validate each transaction
+      const transactions = Array.isArray(response.data)
+        ? response.data.map((transaction) => validateNessieTransaction(transaction))
+        : [];
+
+      // Parse transactions into financial data
+      const parsedData = this.parseNessieData(transactions);
+
+      // Track metrics
+      monitoring.trackAPICall({
+        service: SERVICE_NAME,
+        endpoint: '/accounts/:id/purchases',
+        method: 'GET',
+        duration: Date.now() - startTime,
+        status: response.status,
+        success: true,
+        cached: response.source === 'cache',
+      });
+
+      return {
+        success: true,
+        data: {
+          transactions,
+          parsedData,
         },
-        body: JSON.stringify({ customerId }),
+        source: response.source === 'cache' ? 'cache' : 'api',
+      };
+    } catch (error) {
+      logger.error(SERVICE_NAME, 'Failed to fetch transactions, falling back to mock', error as Error, {
+        accountId,
       });
 
-      if (!response.ok) {
-        throw new Error(`Failed to fetch accounts: ${response.status}`);
-      }
+      // Fallback to mock data on error
+      const parsedData = this.parseNessieData(MOCK_TRANSACTIONS);
 
-      const data: NessieApiResponse = await response.json();
-      
-      if (!data.success || !data.accounts) {
-        throw new Error(data.error || 'Failed to fetch accounts');
-      }
-
-      return data.accounts;
-    } catch (error) {
-      console.error('Error fetching customer accounts:', error);
-      throw error;
+      return {
+        success: true,
+        data: {
+          transactions: MOCK_TRANSACTIONS,
+          parsedData,
+        },
+        source: 'fallback',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
     }
   }
 
   /**
-   * Fetch transactions for a specific account
+   * Parse Nessie transactions into FinancialData format
    */
-  static async getAccountTransactions(accountId: string, useMock: boolean = false): Promise<{
-    transactions: NessieTransaction[];
-    parsedData: Partial<FinancialData>;
-    source: string;
-  }> {
-    try {
-      const params = new URLSearchParams();
-      params.append('accountId', accountId);
-      if (useMock) {
-        params.append('useMock', 'true');
-      }
+  static parseNessieData(transactions: NessieTransaction[]): FinancialData {
+    // Calculate monthly expenses from transactions
+    const monthlyExpenses = transactions.reduce(
+      (acc, transaction) => {
+        const amount = transaction.amount;
+        const description = transaction.description?.toLowerCase() || '';
 
-      const response = await fetch(`${this.baseUrl}?${params.toString()}`);
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch transactions: ${response.status}`);
-      }
-
-      const data: NessieApiResponse = await response.json();
-      
-      if (!data.success) {
-        throw new Error(data.error || 'Failed to fetch transactions');
-      }
-
-      return {
-        transactions: data.transactions || [],
-        parsedData: data.parsedData || {},
-        source: data.source || 'unknown'
-      };
-    } catch (error) {
-      console.error('Error fetching account transactions:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Get all transactions across multiple accounts
-   */
-  static async getAllTransactions(accountIds: string[], useMock: boolean = false): Promise<{
-    transactions: NessieTransaction[];
-    parsedData: Partial<FinancialData>;
-    source: string;
-  }> {
-    try {
-      const allTransactions: NessieTransaction[] = [];
-      let combinedParsedData: Partial<FinancialData> = {
-        monthlyIncome: 0,
-        monthlyExpenses: {
-          housing: 0,
-          food: 0,
-          transportation: 0,
-          entertainment: 0,
-          utilities: 0,
-          other: 0,
+        // Categorize based on description
+        if (description.includes('rent') || description.includes('mortgage')) {
+          acc.housing += amount;
+        } else if (
+          description.includes('grocery') ||
+          description.includes('food') ||
+          description.includes('restaurant')
+        ) {
+          acc.food += amount;
+        } else if (
+          description.includes('gas') ||
+          description.includes('uber') ||
+          description.includes('lyft')
+        ) {
+          acc.transportation += amount;
+        } else if (
+          description.includes('movie') ||
+          description.includes('netflix') ||
+          description.includes('spotify')
+        ) {
+          acc.entertainment += amount;
+        } else if (
+          description.includes('electric') ||
+          description.includes('water') ||
+          description.includes('internet')
+        ) {
+          acc.utilities += amount;
+        } else {
+          acc.other += amount;
         }
-      };
-      let source = 'unknown';
 
-      // Fetch transactions from all accounts
-      for (const accountId of accountIds) {
-        const result = await this.getAccountTransactions(accountId, useMock);
-        allTransactions.push(...result.transactions);
-        source = result.source;
-
-        // Combine parsed data
-        if (result.parsedData.monthlyIncome) {
-          combinedParsedData.monthlyIncome! += result.parsedData.monthlyIncome;
-        }
-        if (result.parsedData.monthlyExpenses) {
-          Object.keys(combinedParsedData.monthlyExpenses!).forEach(category => {
-            const key = category as keyof typeof combinedParsedData.monthlyExpenses;
-            combinedParsedData.monthlyExpenses![key] += result.parsedData.monthlyExpenses?.[key] || 0;
-          });
-        }
+        return acc;
+      },
+      {
+        housing: 0,
+        food: 0,
+        transportation: 0,
+        entertainment: 0,
+        utilities: 0,
+        other: 0,
       }
+    );
 
-      return {
-        transactions: allTransactions,
-        parsedData: combinedParsedData,
-        source
-      };
-    } catch (error) {
-      console.error('Error fetching all transactions:', error);
-      throw error;
-    }
-  }
+    // Estimate monthly income (assume expenses are 70% of income)
+    const totalExpenses = Object.values(monthlyExpenses).reduce((a, b) => a + b, 0);
+    const estimatedIncome = Math.round(totalExpenses / 0.7);
 
-  /**
-   * Get account balance information
-   */
-  static async getAccountBalances(accountIds: string[]): Promise<{
-    totalBalance: number;
-    accountBalances: { [accountId: string]: number };
-  }> {
-    try {
-      const accounts = await Promise.all(
-        accountIds.map(async (accountId) => {
-          // This would need to be implemented based on Nessie API structure
-          // For now, return mock data
-          return {
-            accountId,
-            balance: Math.random() * 10000 // Mock balance
-          };
-        })
-      );
-
-      const accountBalances: { [accountId: string]: number } = {};
-      let totalBalance = 0;
-
-      accounts.forEach(account => {
-        accountBalances[account.accountId] = account.balance;
-        totalBalance += account.balance;
-      });
-
-      return {
-        totalBalance,
-        accountBalances
-      };
-    } catch (error) {
-      console.error('Error fetching account balances:', error);
-      throw error;
-    }
+    return {
+      monthlyIncome: estimatedIncome,
+      monthlyExpenses,
+      currentSavings: 5000, // Default, can't determine from transactions
+      currentDebt: 0, // Default, can't determine from transactions
+    };
   }
 }

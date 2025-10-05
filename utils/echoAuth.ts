@@ -1,4 +1,3 @@
-import { EchoService } from './echoService';
 import { userDatabase, storedUserToEchoUser } from './userDatabase';
 
 export interface EchoUser {
