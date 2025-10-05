@@ -5,14 +5,23 @@ import { AIAgentPrediction, OpikEvaluation } from '@/types/financial';
 interface AIAgentComparisonProps {
   agents: AIAgentPrediction[];
   evaluations: OpikEvaluation[];
+  loading?: boolean;
 }
 
-export default function AIAgentComparison({ agents, evaluations }: AIAgentComparisonProps) {
+export default function AIAgentComparison({ agents, evaluations, loading = false }: AIAgentComparisonProps) {
   return (
     <div className="bg-retro-gray p-6 rounded-lg border-2 border-neon-purple/50">
-      <h2 className="text-2xl font-bold text-neon-purple uppercase tracking-wider mb-6">
-        AI Agent Comparison
-      </h2>
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl font-bold text-neon-purple uppercase tracking-wider">
+          AI Agent Comparison
+        </h2>
+        {loading && (
+          <div className="flex items-center gap-2 text-neon-blue">
+            <span className="animate-spin">⏳</span>
+            <span className="text-sm">Loading AI predictions...</span>
+          </div>
+        )}
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {agents.map((agent, index) => {

@@ -1,0 +1,71 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { EchoAuthService } from '@/utils/echoAuth';
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { email, password, name } = body;
+
+    if (!email || !password || !name) {
+      return NextResponse.json(
+        { error: 'Email, password, and name are required' },
+        { status: 400 }
+      );
+    }
+
+    const apiKey = process.env.ECHO_API_KEY;
+    const appId = process.env.ECHO_APP_ID;
+    
+    if (!apiKey || !appId) {
+      return NextResponse.json(
+        { error: 'Echo API not configured' },
+        { status: 500 }
+      );
+    }
+
+    // Initialize Echo Auth
+    EchoAuthService.initialize(apiKey, appId);
+
+    // Sign up user
+    const result = await EchoAuthService.signUp(email, password, name);
+
+    if (result.success && result.user && result.token) {
+      // Create Nessie customer for the new user
+      const customerId = await EchoAuthService.createNessieCustomer(
+        result.user.id,
+        result.token,
+        {
+          firstName: name.split(' ')[0],
+          lastName: name.split(' ').slice(1).join(' ') || '',
+          address: {
+            streetNumber: '123',
+            streetName: 'Main St',
+            city: 'San Francisco',
+            state: 'CA',
+            zip: '94105',
+          },
+        }
+      );
+
+      return NextResponse.json({
+        success: true,
+        user: {
+          ...result.user,
+          customerId,
+        },
+        token: result.token,
+      });
+    } else {
+      return NextResponse.json(
+        { error: result.error || 'Signup failed' },
+        { status: 400 }
+      );
+    }
+  } catch (error) {
+    console.error('Signup error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
