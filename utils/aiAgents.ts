@@ -140,5 +140,8 @@ export function generatePredictionVariation(
     ...point,
     netWorth: Math.round(point.netWorth * factor),
     savings: Math.round(point.savings * factor),
+    debt: Math.round(point.debt * (2 - factor)), // Inverse relationship with savings
+    totalSpent: Math.round(point.totalSpent * factor),
+    totalSaved: Math.round(point.totalSaved * factor),
   }));
 }

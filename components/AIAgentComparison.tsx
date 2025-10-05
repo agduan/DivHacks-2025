@@ -5,22 +5,31 @@ import { AIAgentPrediction, OpikEvaluation } from '@/types/financial';
 interface AIAgentComparisonProps {
   agents: AIAgentPrediction[];
   evaluations: OpikEvaluation[];
+  comparison?: any;
   loading?: boolean;
 }
 
-export default function AIAgentComparison({ agents, evaluations, loading = false }: AIAgentComparisonProps) {
+export default function AIAgentComparison({ agents, evaluations, comparison, loading = false }: AIAgentComparisonProps) {
   return (
     <div className="bg-retro-gray p-6 rounded-lg border-2 border-neon-purple/50">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-neon-purple uppercase tracking-wider font-vcr">
           AI Agent Comparison
         </h2>
-        {loading && (
-          <div className="flex items-center gap-2 text-neon-blue">
-            <span className="animate-spin">⏳</span>
-            <span className="text-sm">Loading AI predictions...</span>
-          </div>
-        )}
+        <div className="flex items-center gap-4">
+          {comparison && (
+            <div className="flex items-center gap-2 text-neon-green text-sm">
+              <span>🔬</span>
+              <span>OPIK Analysis Active</span>
+            </div>
+          )}
+          {loading && (
+            <div className="flex items-center gap-2 text-neon-blue">
+              <span className="animate-spin">⏳</span>
+              <span className="text-sm">Loading AI predictions...</span>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -111,6 +120,54 @@ export default function AIAgentComparison({ agents, evaluations, loading = false
           );
         })}
       </div>
+
+      {/* OPIK Comparison Insights */}
+      {comparison && (
+        <div className="mt-6 p-4 bg-neon-blue/10 border-2 border-neon-blue rounded-lg">
+          <h3 className="text-lg font-bold text-neon-blue uppercase tracking-wide mb-3 font-vcr">
+            OPIK Analysis Results
+          </h3>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-neon-green font-bold">Best Performer:</span>
+              <span className="text-neon-blue font-bold">{comparison.bestPerformer}</span>
+            </div>
+            
+            <div className="grid grid-cols-3 gap-4 text-sm">
+              <div className="text-center">
+                <div className="text-neon-purple">Avg Accuracy</div>
+                <div className="text-neon-green font-bold">
+                  {(comparison.averageMetrics.accuracy * 100).toFixed(0)}%
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="text-neon-blue">Avg Consistency</div>
+                <div className="text-neon-blue font-bold">
+                  {(comparison.averageMetrics.consistency * 100).toFixed(0)}%
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="text-neon-pink">Avg Reliability</div>
+                <div className="text-neon-purple font-bold">
+                  {(comparison.averageMetrics.reliability * 100).toFixed(0)}%
+                </div>
+              </div>
+            </div>
+            
+            <div className="space-y-1">
+              <div className="text-sm text-neon-green font-bold">Key Insights:</div>
+              <ul className="text-sm text-gray-300 space-y-1">
+                {comparison.insights.map((insight: string, index: number) => (
+                  <li key={index} className="flex items-start gap-2">
+                    <span className="text-neon-blue">▸</span>
+                    <span>{insight}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Best Agent Highlight */}
       {evaluations.length > 0 && (

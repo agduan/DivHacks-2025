@@ -151,6 +151,7 @@ function FinancialTimeMachineApp() {
   // AI Agent data - try Echo API first, fallback to mock data
   const [aiAgents, setAiAgents] = useState<AIAgentPrediction[]>([]);
   const [evaluations, setEvaluations] = useState<OpikEvaluation[]>([]);
+  const [opikComparison, setOpikComparison] = useState<any>(null);
   const [aiLoading, setAiLoading] = useState(false);
 
   // Mock AI Agent data (fallback)
@@ -214,36 +215,39 @@ function FinancialTimeMachineApp() {
     },
   ];
 
-  // Load AI predictions from Echo API
+  // Load AI predictions with OPIK evaluation
   const loadAIPredictions = async () => {
+    console.log('🚀 Loading AI predictions with OPIK evaluation...', { financialData, timelineMonths });
     setAiLoading(true);
     try {
-      const response = await fetch('/api/echo', {
+      const response = await fetch('/api/ai-agents', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          statusQuoTimeline,
           financialData,
-          timelineMonths,
-          scenarioChanges,
         }),
       });
 
       if (response.ok) {
         const data = await response.json();
-        setAiAgents(data.predictions || []);
+        setAiAgents(data.agents || []);
         setEvaluations(data.evaluations || []);
+        setOpikComparison(data.comparison || null);
       } else {
         // Fallback to mock data
         setAiAgents(mockAIAgents);
         setEvaluations(mockEvaluations);
+        setOpikComparison(null);
       }
     } catch (error) {
       console.error('Error loading AI predictions:', error);
       // Fallback to mock data
       setAiAgents(mockAIAgents);
       setEvaluations(mockEvaluations);
+      setOpikComparison(null);
     } finally {
       setAiLoading(false);
     }
@@ -420,6 +424,7 @@ function FinancialTimeMachineApp() {
         <AIAgentComparison 
           agents={aiAgents.length > 0 ? aiAgents : mockAIAgents} 
           evaluations={evaluations.length > 0 ? evaluations : mockEvaluations}
+          comparison={opikComparison}
           loading={aiLoading}
         />
 
